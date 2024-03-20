@@ -1,9 +1,9 @@
 import './App.css';
 import DisplayButton from './Components/DisplayButton/DisplayButton';
-import registrasiLogo from './Assets/registrasi.png';
-import jobLogo from './Assets/job.png';
-import serialisasiLogo from './Assets/serialisasi.png';
-import agregasiLogo from './Assets/agregasi.png';
+import registrasiLogo from './Assets/registrasi.svg';
+import jobLogo from './Assets/job.svg';
+import serialisasiLogo from './Assets/serialisasi.svg';
+import agregasiLogo from './Assets/agregasi.svg';
 
 function App() {
   return (
