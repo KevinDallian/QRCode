@@ -1,0 +1,12 @@
+.displayBtn {
+    margin: 5px;
+    width: 30vh;
+    height: 28vh;
+    border-radius: 8%;
+    background-color: #D9D9D9;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

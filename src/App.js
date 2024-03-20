@@ -1,22 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
+import DisplayButton from './Components/DisplayButton/DisplayButton';
+import registrasiLogo from './Assets/registrasi.png';
+import jobLogo from './Assets/job.png';
+import serialisasiLogo from './Assets/serialisasi.png';
+import agregasiLogo from './Assets/agregasi.png';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <DisplayButton image={registrasiLogo} text={"Registrasi Produk"}></DisplayButton>
+        <DisplayButton image={jobLogo} text={"Job Order"}></DisplayButton>
+        <DisplayButton image={serialisasiLogo} text={"Serialisasi"}></DisplayButton>
+        <DisplayButton image={agregasiLogo} text={"Agregasi"}></DisplayButton>
       </header>
     </div>
   );
