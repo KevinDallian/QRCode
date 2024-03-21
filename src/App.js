@@ -1,18 +1,26 @@
 import './App.css';
-import DisplayButton from './Components/DisplayButton/DisplayButton';
-import registrasiLogo from './Assets/registrasi.svg';
-import jobLogo from './Assets/job.svg';
-import serialisasiLogo from './Assets/serialisasi.svg';
-import agregasiLogo from './Assets/agregasi.svg';
+import Home from './Pages/Home/Home';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Registrasi from './Pages/Registrasi/Registrasi';
+import Serialisasi from './Pages/Serialisasi/Serialisasi';
+import JobOrder from './Pages/JobOrder/JobOrder';
+import Agregasi from './Pages/Agregasi/Agregasi';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <DisplayButton image={registrasiLogo} text={"Registrasi Produk"}></DisplayButton>
-        <DisplayButton image={jobLogo} text={"Job Order"}></DisplayButton>
-        <DisplayButton image={serialisasiLogo} text={"Serialisasi"}></DisplayButton>
-        <DisplayButton image={agregasiLogo} text={"Agregasi"}></DisplayButton>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/'>
+              <Route index element={<Home />}></Route>
+              <Route path='registrasi' element={<Registrasi />}/>
+              <Route path='jobOrder' element={<JobOrder />}/>
+              <Route path='serialisasi' element={<Serialisasi />} />
+              <Route path='agregasi' element={<Agregasi />}/>
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </header>
     </div>
   );
