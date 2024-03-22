@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './Registrasi.css';
 import ActionButton from '../../Components/ActionButton/ActionButton';
+import ReactTable from '../../Components/Table/ReactTable';
 
 export default function Registrasi(){
     const [name, setName] = useState('');
@@ -8,7 +9,12 @@ export default function Registrasi(){
     const [het, setHET] = useState('');
     const [quantity, setQuantity] = useState('');
     const [storage, setStorage] = useState('');
-
+    
+    const header = ["ID Produk", "Nama Produk", "NIE", "HET", "Kuantitas per Box", "Storage"];
+    const [data, setData] = useState([
+        {id : "PR001", name : "Obat Insto", nie : "DTL2038202646A1", het : "50000", quantity : "50", storage : "Simpan dalam suhu ruangan"},
+    ]);
+    
     return (
         <>
             <h1 id='title'>Registrasi Produk</h1>
@@ -25,7 +31,9 @@ export default function Registrasi(){
                     <ActionButton name={"Clear"} color='#fdff9b'/>
                     <ActionButton name={"Save"} color='#b5f9b8'/>
                 </div>
-                
+            </div>
+            <div id='table'>
+                <ReactTable headers={header} datas={data}/>
             </div>
             
         </>

@@ -1,0 +1,22 @@
+#table {
+    margin-top: 4vh;
+    width: 80vw;
+    margin-left: 2vw;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+th {
+    text-align: left;
+}
+
+.row:hover {
+    cursor: pointer;
+    background-color: #d3ffff;
+}
