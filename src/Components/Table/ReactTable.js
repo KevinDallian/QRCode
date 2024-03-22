@@ -1,11 +1,11 @@
 import './ReactTable.css';
 
-export default function ReactTable({headers, datas, onClickHandler}){
+export default function ReactTable({headers, datas, currentIndex, onClickHandler}){
     const headerDisplay = headers.map(header =>
         <th key={header}>{header}</th>
         );
     const dataDisplay = datas.map((data, index) =>
-        <tr className='row' key={index} onClick={()=>{console.log({index})}}>
+        <tr className='row' key={index} onClick={()=>onClickHandler(index)} style={currentIndex === index ? {backgroundColor: "#d3ffff"} : {}}>
             <td>{data.id}</td>
             <td>{data.name}</td>
             <td>{data.nie}</td>
