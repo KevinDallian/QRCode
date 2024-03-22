@@ -9,8 +9,7 @@ import Agregasi from './Pages/Agregasi/Agregasi';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <BrowserRouter>
+      <BrowserRouter>
           <Routes>
             <Route path='/'>
               <Route index element={<Home />}></Route>
@@ -21,7 +20,6 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
-      </header>
     </div>
   );
 }
