@@ -2,6 +2,8 @@ import { useState } from 'react';
 import './Registrasi.css';
 import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
+import { Link } from 'react-router-dom';
+import { FormDetail } from '../../Components/FormDetail/FormDetail';
 
 export default function Registrasi(){
     const [name, setName] = useState('');
@@ -17,7 +19,7 @@ export default function Registrasi(){
     ]);
 
     function validateData(){
-        return name == "" || nie == "" || het == "" || quantity == "" || storage == "";
+        return name === "" || nie === "" || het === "" || quantity === "" || storage === "";
     }
 
     function onClickRow(index){
@@ -80,14 +82,22 @@ export default function Registrasi(){
     
     return (
         <>
-            <h1 id='title'>Registrasi Produk</h1>
-            <form id='form'>
-                <FormDetail variableName={"Nama Produk"} value={name} setValue={(e)=>setName(e)} />
-                <FormDetail variableName={"NIE"} value={nie} setValue={(e)=>setNIE(e)}/>
-                <FormDetail variableName={"HET"} value={het} setValue={(e)=>setHET(e)}/>
-                <FormDetail variableName={"Kuantitas per Box"} value={quantity} setValue={(e)=>setQuantity(e)}/>
-                <FormDetail variableName={"Storage"} value={storage} setValue={(e)=>setStorage(e)}/>
-            </form>
+            <Link to="/">Back</Link>
+            <h1 className='title'>Registrasi Produk</h1>
+            <div className='flex-row'>
+                <form id='form'>
+                    <FormDetail variableName={"Nama Produk"} value={name} setValue={(e)=>setName(e)} />
+                    <FormDetail variableName={"NIE"} value={nie} setValue={(e)=>setNIE(e)}/>
+                    <FormDetail variableName={"HET"} value={het} setValue={(e)=>setHET(e)}/>
+                    <FormDetail variableName={"Kuantitas per Box"} value={quantity} setValue={(e)=>setQuantity(e)}/>
+                    <FormDetail variableName={"Storage"} value={storage} setValue={(e)=>setStorage(e)}/>
+                </form>
+                <div id='twoBtn' className='flex-column'>
+                    <ActionButton name={"Import"} color='#f1f1f1' onClickFunction={()=> {console.log('Import')}}/>
+                    <ActionButton name={"Export"} color='#f1f1f1' onClickFunction={()=> {console.log('Export')}}/>
+                </div>
+            </div>
+            
             <div id='buttonRow'>
                 <ActionButton name={"Delete"} color='#ffa2a2' onClickFunction={deleteData} disabled={currentIndex == null}/>
                 <div>
@@ -99,14 +109,5 @@ export default function Registrasi(){
                 <ReactTable headers={header} datas={data} currentIndex={currentIndex} onClickHandler={onClickRow}/>
             </div>
         </>
-    );
-}
-
-export function FormDetail({variableName, value, setValue}){
-    return (
-        <div className='box'>
-            <label>{variableName}</label>
-            <input value={value} onChange={(e)=>setValue(e.target.value)}/>
-        </div>
     );
 }

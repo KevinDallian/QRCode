@@ -1,24 +1,5 @@
-#title {
-    margin-top: 10vh;
-    margin-bottom: 10vh;
-    margin-left: 4vw;
-}
-
 #form {
     margin-left: 4vw;
-    display: flex;
-    flex-direction: column;
-}
-
-.box { 
-    width: 50vw;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1.5vh;
-}
-
-.box input {
-    width: 30vw;
 }
 
 #buttonRow{
@@ -26,4 +7,12 @@
     display: flex;
     justify-content: space-between;
     margin-left: 4vw;
+}
+
+#label {
+    font-weight: bold;
+}
+
+#twoBtn {
+    margin-left: 5vw;
 }
