@@ -5,7 +5,7 @@ export default function ReactTable({headers, datas, onClickHandler}){
         <th key={header}>{header}</th>
         );
     const dataDisplay = datas.map((data, index) =>
-        <tr key={index}>
+        <tr className='row' key={index} onClick={()=>{console.log({index})}}>
             <td>{data.id}</td>
             <td>{data.name}</td>
             <td>{data.nie}</td>
