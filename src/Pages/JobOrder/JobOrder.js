@@ -93,9 +93,6 @@ export default function JobOrder() {
                     <FormDetail variableName='Order Qty' value={quantity} setValue={(e)=>{setQuantity(e)}}/>
                     <OptionForm variableName='Job Status' options={['Active', 'Cancel', 'Suspended']} value={jobStatus} setValue={(e)=>{setJobStatus(e)}}/>
                 </form>
-                <div>
-                    
-                </div>
             </div>
             
 
