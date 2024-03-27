@@ -44,3 +44,16 @@
     grid-template-columns: 1fr 1fr;
     justify-items: left;
 }
+
+.modal-border {
+    border: 1px solid black;
+    margin-top: 2vh;
+}
+
+
+.qr-code {
+    margin-right: 2vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

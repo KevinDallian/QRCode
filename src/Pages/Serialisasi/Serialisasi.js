@@ -4,6 +4,7 @@ import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
 import { useState } from 'react';
 import Modal from '../../Components/Modal/Modal';
+import QRCode from 'react-qr-code';
 
 export default function Serialisasi(){
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
@@ -11,6 +12,7 @@ export default function Serialisasi(){
     const [showEndModal, setShowEndModal] = useState(false);
     const [currentJob, setCurrentJob] = useState({});
     const [data, setData] = useState([]);
+    const [showPrintModal, setShowPrintModal] = useState(false);
 
     const jobs = [
         {id : "J001", productID : "PR001", batchNo : "23032024/01", expiredDate : new Date("2024-03-29").toString(), quantity : 10, jobStatus : "Active"},
@@ -32,10 +34,18 @@ export default function Serialisasi(){
     const toggleModal = (modalType) => {
         if (modalType === "JobModal") {
             setShowJobModal(!showJobModal);
-        } else {
+        } else if (modalType === "EndModal") {
             setShowEndModal(!showEndModal);
+        } else if (modalType === "PrintModal") {
+            setShowPrintModal(!showPrintModal);
         }
         
+    }
+
+    const endPrint = () => {
+
+        setData([]);
+        toggleModal("PrintModal");
     }
 
     const formatDate = (date) => {
@@ -57,7 +67,7 @@ export default function Serialisasi(){
                 id : generatedID,
                 jobID : job.id,
                 masterboxID : "",
-                manufactureDate : new Date(),
+                manufactureDate : new Date().toString(),
                 orderStatus : "Not Printed"
             };
             generatedData.push(newData);
@@ -70,6 +80,7 @@ export default function Serialisasi(){
             {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs}/>}
             <Link to='/'>Back</Link>
             {showEndModal && <EndModal toggleModal={()=>toggleModal("EndModal")} endJob={endJob}/>}
+            {showPrintModal && <PrintModal data={data} toggleModal={()=>endPrint()} job={currentJob}/>}
             <h1 className='title'>Serialisasi</h1>
             <div className='flex-row job-display'>
                 <div className='col'>
@@ -87,7 +98,7 @@ export default function Serialisasi(){
                     <ActionButton name={"End Job"} onClickFunction={()=> {toggleModal("EndModal")}} disabled={Object.keys(currentJob).length === 0}/>
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Print"} onClickFunction={()=> {console.log("Print")}}/>
+                    <ActionButton name={"Print"} onClickFunction={()=> {toggleModal("PrintModal")}}/>
                     <ActionButton name={"Test Print"} onClickFunction={()=> {console.log("Test Print")}}/>
                     <ActionButton name={"Stop Print"} onClickFunction={()=> {console.log("Stop Print")}}/>
                 </div>
@@ -152,6 +163,53 @@ export function EndModal({toggleModal, endJob}){
                 <button onClick={toggleModal}>Cancel</button>
                 <button onClick={()=>{endJob()}}>End</button>
             </div>
+        </Modal>
+    );
+}
+
+function PrintModal({data, toggleModal, job}) {
+    const formatDate = (date) => {
+        if (!date) return "";
+        if (date instanceof Date) {
+            return date.toISOString().split('T')[0];
+        } else {
+            return new Date(date).toISOString().split('T')[0];
+        }
+    }
+
+    const dataToBePrinted = data.map((d, index) => {
+        return (
+            <div key={index} className='modal-border flex-space-between'>
+                <table id='table'>
+                    <tbody>
+                        <tr>
+                            <th>No. Batch</th>
+                            <td>{job.batchNo}</td>
+                        </tr>
+                        <tr>
+                            <th>Exp. Date</th>
+                            <td>{formatDate(job.expiredDate)}</td>
+                        </tr>
+                        <tr>
+                            <th>Mfg. Date</th>
+                            <td>{formatDate(d.manufactureDate)}</td>
+                        </tr>
+                        <tr>
+                            <th>HET</th>
+                            <td>{250000}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className='qr-code'>
+                    <QRCode value={d.id} size={128}/>
+                </div>
+            </div>
+        );
+    });
+    return (
+        <Modal width='40vw'>
+            {dataToBePrinted}
+            <button onClick={toggleModal}>Close</button>
         </Modal>
     );
 }
