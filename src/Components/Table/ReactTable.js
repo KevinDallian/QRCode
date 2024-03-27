@@ -1,21 +1,25 @@
 import './ReactTable.css';
 
 export default function ReactTable({headers, datas, currentIndex, onClickHandler}){
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'numeric', day: 'numeric'};
-        return new Date(dateString).toLocaleDateString('en-GB', options);
-    };
+    const formatDate = (date) => {
+        if (!date) return "";
+        if (date instanceof Date) {
+            return date.toISOString().split('T')[0];
+        } else {
+            return new Date(date).toISOString().split('T')[0];
+        }
+    }
     
     const headerDisplay = headers.map(header =>
-        <th key={header}>{header}</th>
+        <th className='header' key={header}>{header}</th>
         );
     
     const dataDisplay = datas.map((data, index) => {
         const cells = Object.keys(data).map(key => {
-            if (key === 'expiredDate') {
-                return <td key={key}>{formatDate(data[key])}</td>;
+            if (key === 'expiredDate' || key === 'manufactureDate') {
+                return <td className='data' key={key}>{formatDate(data[key])}</td>;
             } else {
-                return <td key={key}>{data[key]}</td>;
+                return <td className='data' key={key}>{data[key]}</td>;
             }
         });
         return (

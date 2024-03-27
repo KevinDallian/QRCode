@@ -1,10 +1,20 @@
 #table {
+    border: none;
+    border-collapse: collapse;
     margin-top: 4vh;
     width: 80%;
     margin-left: 2vw;
 }
 
-table, th, td {
+.header {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.data {
     border: 1px solid black;
     border-collapse: collapse;
     padding-left: 5px;

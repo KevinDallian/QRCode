@@ -62,6 +62,7 @@ export default function JobOrder() {
         const newData = [...data.slice(0, currentIndex), ...data.slice(currentIndex+1)];
         setData(newData);
         setCurrentIndex(null);
+        clearData();
     }
 
     function clearData(){

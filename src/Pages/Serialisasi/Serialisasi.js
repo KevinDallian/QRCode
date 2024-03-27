@@ -57,7 +57,7 @@ export default function Serialisasi(){
                 id : generatedID,
                 jobID : job.id,
                 masterboxID : "",
-                manufactureDate : new Date().toDateString,
+                manufactureDate : new Date(),
                 orderStatus : "Not Printed"
             };
             generatedData.push(newData);
@@ -105,7 +105,7 @@ export default function Serialisasi(){
     );
 }
 
-function JobList({name, detail}) {
+export function JobList({name, detail}) {
     return (
         <div className='flex-space-between joblist-box'>
             <h3 className='name'>{name}</h3>
@@ -114,7 +114,7 @@ function JobList({name, detail}) {
     );
 }
 
-function JobModal({toggleModal, loadJob, jobs}) {
+export function JobModal({toggleModal, loadJob, jobs}) {
     const [currentIndex, setCurrentIndex] = useState(null);
     const modalHeaders = ["ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
 
@@ -143,7 +143,7 @@ function JobModal({toggleModal, loadJob, jobs}) {
     );
 }
 
-function EndModal({toggleModal, endJob}){
+export function EndModal({toggleModal, endJob}){
     return (
         <Modal>
             <h1>End Job</h1>
