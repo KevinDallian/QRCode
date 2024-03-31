@@ -5,20 +5,17 @@ import { useState } from 'react';
 import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
 
-export default function JobOrder() {
+export default function JobOrder({jobs, setJobs, products}) {
     const [productID, setProductID] = useState('PR001');
     const [batchNo, setBatchNo] = useState('');
     const [expiredDate, setDate] = useState('');
     const [quantity, setQuantity] = useState('');
     const [jobStatus, setJobStatus] = useState('Active');
+    const productsID = products.map((product) => product.id);
 
     const [currentIndex, setCurrentIndex] = useState(null);
 
     const header = ["ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
-
-    const [data, setData] = useState([
-        {id : "J001", productID : "PR001", batchNo : "23032024/01", expiredDate : new Date("2024-03-29").toString(), quantity : 100, jobStatus : "Active"},
-    ]);
 
     function validateData(){
         return productID === "" || batchNo === "" || expiredDate === "" || quantity === "" || jobStatus === "";
@@ -27,24 +24,24 @@ export default function JobOrder() {
     function onClickRow(index){
         setCurrentIndex(index);
         
-        const selectedData = data[index];
+        const selectedData = jobs[index];
         setFormData(selectedData);
     }
 
     function saveData() {
         if (currentIndex !== null) {
             const updatedData = {
-                id: data[currentIndex].id,
+                id: jobs[currentIndex].id,
                 productID: productID,
                 batchNo: batchNo,
                 expiredDate: expiredDate,
                 quantity: quantity,
                 jobStatus: jobStatus,
               };
-              const newData = [...data.slice(0, currentIndex), updatedData, ...data.slice(currentIndex + 1)];
-              setData(newData);
+              const newData = [...jobs.slice(0, currentIndex), updatedData, ...jobs.slice(currentIndex + 1)];
+              setJobs(newData);
         } else {
-            const existingDataLength = data.length;
+            const existingDataLength = jobs.length;
             const generatedID = `J${(existingDataLength+1).toString().padStart(3, "0")}`;
             const newData = {
                 id : generatedID,
@@ -54,13 +51,13 @@ export default function JobOrder() {
                 quantity : quantity,
                 jobStatus : jobStatus
             };
-            setData([...data, newData]);
+            setJobs([...jobs, newData]);
         }
     }
 
     function deleteData(){
-        const newData = [...data.slice(0, currentIndex), ...data.slice(currentIndex+1)];
-        setData(newData);
+        const newData = [...jobs.slice(0, currentIndex), ...jobs.slice(currentIndex+1)];
+        setJobs(newData);
         setCurrentIndex(null);
         clearData();
     }
@@ -88,7 +85,7 @@ export default function JobOrder() {
             <h1 className='title'>Job Order</h1>
             <div>
                 <form id='form'>
-                    <OptionForm variableName='Produk' options={['PR001', 'PR002']} value={productID} setValue={(e)=>{setProductID(e)}}/>
+                    <OptionForm variableName='Produk' options={productsID} value={productID} setValue={(e)=>{setProductID(e)}}/>
                     <FormDetail variableName='Batch No' value={batchNo} setValue={(e)=>{setBatchNo(e)}}/>
                     <DateForm variableName='Expired Date' value={expiredDate} setValue={(e)=>{setDate(e)}}/>
                     <FormDetail variableName='Order Qty' value={quantity} setValue={(e)=>{setQuantity(e)}}/>
@@ -106,7 +103,7 @@ export default function JobOrder() {
             </div>
 
             <div id='table'>
-                <ReactTable headers={header} datas={data} currentIndex={null} onClickHandler={onClickRow}/>
+                <ReactTable headers={header} datas={jobs} currentIndex={null} onClickHandler={onClickRow}/>
             </div>
             
         </>

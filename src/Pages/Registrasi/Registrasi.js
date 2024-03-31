@@ -5,7 +5,7 @@ import ReactTable from '../../Components/Table/ReactTable';
 import { Link } from 'react-router-dom';
 import { FormDetail } from '../../Components/FormDetail/FormDetail';
 
-export default function Registrasi(){
+export default function Registrasi({products, setProducts}){
     const [name, setName] = useState('');
     const [nie, setNIE] = useState('');
     const [het, setHET] = useState('');
@@ -14,9 +14,6 @@ export default function Registrasi(){
     const [currentIndex, setCurrentIndex] = useState(null);
     
     const header = ["ID Produk", "Nama Produk", "NIE", "HET", "Kuantitas per Box", "Storage"];
-    const [data, setData] = useState([
-        {id : "PR001", name : "Obat Insto", nie : "DTL2038202646A1", het : "50000", quantity : "50", storage : "Simpan dalam suhu ruangan"},
-    ]);
 
     function validateData(){
         return name === "" || nie === "" || het === "" || quantity === "" || storage === "";
@@ -25,24 +22,24 @@ export default function Registrasi(){
     function onClickRow(index){
         setCurrentIndex(index);
         
-        const selectedData = data[index];
+        const selectedData = products[index];
         setFormData(selectedData)
     }
 
     function saveData() {
         if (currentIndex !== null) {
             const updatedData = {
-                id: data[currentIndex].id,
+                id: products[currentIndex].id,
                 name: name,
                 nie: nie,
                 het: het,
                 quantity: quantity,
                 storage: storage,
               };
-              const newData = [...data.slice(0, currentIndex), updatedData, ...data.slice(currentIndex + 1)];
-              setData(newData);
+              const newData = [...products.slice(0, currentIndex), updatedData, ...products.slice(currentIndex + 1)];
+              setProducts(newData);
         } else {
-            const existingDataLength = data.length;
+            const existingDataLength = products.length;
             const generatedID = `PR${(existingDataLength+1).toString().padStart(3, "0")}`;
             const newData = {
                 id : generatedID,
@@ -52,13 +49,13 @@ export default function Registrasi(){
                 quantity : quantity,
                 storage : storage
             };
-            setData([...data, newData]);
+            setProducts([...products, newData]);
         }
     }
 
     function deleteData(){
-        const newData = [...data.slice(0, currentIndex), ...data.slice(currentIndex+1)];
-        setData(newData);
+        const newData = [...products.slice(0, currentIndex), ...products.slice(currentIndex+1)];
+        setProducts(newData);
         setCurrentIndex(null);
         clearData();
     }
@@ -106,7 +103,7 @@ export default function Registrasi(){
                 </div>
             </div>
             <div id='table'>
-                <ReactTable headers={header} datas={data} currentIndex={currentIndex} onClickHandler={onClickRow}/>
+                <ReactTable headers={header} datas={products} currentIndex={currentIndex} onClickHandler={onClickRow}/>
             </div>
         </>
     );

@@ -6,17 +6,13 @@ import { useState } from 'react';
 import Modal from '../../Components/Modal/Modal';
 import QRCode from 'react-qr-code';
 
-export default function Serialisasi(){
+export default function Serialisasi({jobs, setGlobalOrders}){
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
     const [currentJob, setCurrentJob] = useState({});
-    const [data, setData] = useState([]);
     const [showPrintModal, setShowPrintModal] = useState(false);
-
-    const jobs = [
-        {id : "J001", productID : "PR001", batchNo : "23032024/01", expiredDate : new Date("2024-03-29").toString(), quantity : 10, jobStatus : "Active"},
-    ];
+    const [orders, setOrders] = useState([]);
     
     const loadJob = (index) => {
         const job = jobs[index];
@@ -43,8 +39,7 @@ export default function Serialisasi(){
     }
 
     const endPrint = () => {
-
-        setData([]);
+        setOrders([]);
         toggleModal("PrintModal");
     }
 
@@ -59,7 +54,6 @@ export default function Serialisasi(){
 
     const generateData = (job) => {
         let generatedData = [];
-        console.log(job.quantity);
         for (let i=0;i<job.quantity;i++) {
             const existingDataLength = generatedData.length;
             const generatedID = `OR${(existingDataLength+1).toString().padStart(3, "0")}`;
@@ -72,7 +66,7 @@ export default function Serialisasi(){
             };
             generatedData.push(newData);
         }
-        setData(generatedData)
+        setOrders(generatedData)
     }
 
     return (
@@ -80,7 +74,7 @@ export default function Serialisasi(){
             {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs}/>}
             <Link to='/'>Back</Link>
             {showEndModal && <EndModal toggleModal={()=>toggleModal("EndModal")} endJob={endJob}/>}
-            {showPrintModal && <PrintModal data={data} toggleModal={()=>endPrint()} job={currentJob}/>}
+            {showPrintModal && <PrintModal data={orders} toggleModal={()=>endPrint()} job={currentJob}/>}
             <h1 className='title'>Serialisasi</h1>
             <div className='flex-row job-display'>
                 <div className='col'>
@@ -110,7 +104,7 @@ export default function Serialisasi(){
                 <p>Cancelled        :</p>
             </div>
             <div id='table'>
-                <ReactTable headers={headers} datas={data} onClickHandler={(e)=>{console.log(e)}}/>
+                <ReactTable headers={headers} datas={orders} onClickHandler={(e)=>{console.log(e)}}/>
             </div>
         </>
     );

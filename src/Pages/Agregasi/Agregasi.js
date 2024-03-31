@@ -7,7 +7,7 @@ import ReactTable from '../../Components/Table/ReactTable';
 import Modal from '../../Components/Modal/Modal';
 import Barcode from 'react-jsbarcode';
 
-export default function Agregasi(){
+export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox}){
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
@@ -15,13 +15,12 @@ export default function Agregasi(){
     const [currentJob, setCurrentJob] = useState({});
     const [scannedData, setScannedData] = useState([]);
     const [printData, setPrintData] = useState(null);
-
-    const jobs = [
-        {id : "J001", productID : "PR001", batchNo : "23032024/01", expiredDate : new Date("2024-03-29").toString(), quantity : 10, jobStatus : "Active"},
-    ];
+    const [product, setProduct] = useState({});
     
     const loadJob = (index) => {
         const job = jobs[index];
+        const product = products.find((product) => product.id === job.productID);
+        setProduct(product);
         setCurrentJob(job);
     }
 
@@ -72,16 +71,19 @@ export default function Agregasi(){
     }
 
     const printMasterBox = () => {
+        const existingDataLength = masterboxs.length + 1;
+        const generatedID = `MB${(existingDataLength).toString().padStart(3, "0")}`;
         const data = {
-            productName : "Obat Insto",
-            masterboxID : "MB001",
-            nie : "DTL2038202646A1",
+            productName : product.name,
+            masterboxID : generatedID,
+            nie : product.nie,
             expiredDate : formatDate(currentJob.expiredDate),
             quantity : currentJob.quantity,
-            storage : "Suhu dibawah 30C",
+            storage : product.storage,
             manufacturer : "PT Pharma Health Care Indonesia",
             batchNo : currentJob.batchNo,
         };
+        setGlobalMasterbox([...masterboxs, data]);
         setPrintData(data);
         toggleModal("PrintModal");
     }
@@ -100,7 +102,7 @@ export default function Agregasi(){
                     <JobList name={"Batch No"} detail={currentJob.batchNo} />
                 </div>
                 <div className='col'>
-                    <JobList name={"Order Quantity"} detail={currentJob.quantity}/>
+                    <JobList name={"Order Quantity"} detail={product.quantity}/>
                     <JobList name={"Expired Date"} detail={formatDate(currentJob.expiredDate)}/>
                     <JobList name={"Job Status"} detail={currentJob.jobStatus}/>
                 </div>
@@ -109,8 +111,8 @@ export default function Agregasi(){
                     <ActionButton name={"End Job"} onClickFunction={()=> {toggleModal("EndModal")}} disabled={Object.keys(currentJob).length === 0}/>
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Print"} onClickFunction={()=> {printMasterBox()}} disabled={scannedData.length < currentJob.quantity || Object.keys(currentJob).length === 0}/>
-                    <ActionButton name={"Scan"} onClickFunction={()=> {scanOrder()}} disabled={Object.keys(currentJob).length === 0 || scannedData.length === currentJob.quantity}/>
+                    <ActionButton name={"Print"} onClickFunction={()=> {printMasterBox()}} disabled={scannedData.length < product.quantity || Object.keys(currentJob).length === 0}/>
+                    <ActionButton name={"Scan"} onClickFunction={()=> {scanOrder()}} disabled={Object.keys(currentJob).length === 0 || scannedData.length >= product.quantity}/>
                 </div>
             </div>
 
