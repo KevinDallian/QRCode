@@ -7,7 +7,7 @@ import Modal from '../../Components/Modal/Modal';
 import QRCode from 'react-qr-code';
 import { useEffect } from 'react';
 
-export default function Serialisasi({jobs, products, setGlobalOrders}){
+export default function Serialisasi({jobs, products, globalOrders, setGlobalOrders}){
     const headers = ['No', 'Order ID', 'Job ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
@@ -203,6 +203,7 @@ function PrintModal({data, toggleModal, job}) {
                 </table>
                 <div className='qr-code'>
                     <QRCode value={d.id} size={128}/>
+                    <p>{d.id}</p>
                 </div>
             </div>
         );

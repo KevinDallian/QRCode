@@ -52,8 +52,11 @@
 
 
 .qr-code {
+    padding-top: 10px;
     margin-right: 2vw;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    text-align: center;
 }
