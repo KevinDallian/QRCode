@@ -11,7 +11,7 @@ export default function JobOrder({jobs, setJobs, products}) {
     const [expiredDate, setDate] = useState('');
     const [quantity, setQuantity] = useState('');
     const [jobStatus, setJobStatus] = useState('Active');
-    const productsID = products.map((product) => `${product.id} - ${product.name}`);
+    const productsID = products.map((product) => `${product.id}`);
 
     const [currentIndex, setCurrentIndex] = useState(null);
 
@@ -92,8 +92,6 @@ export default function JobOrder({jobs, setJobs, products}) {
                     <OptionForm variableName='Job Status' options={['Active', 'Cancel', 'Suspended']} value={jobStatus} setValue={(e)=>{setJobStatus(e)}}/>
                 </form>
             </div>
-            
-
             <div id='buttonRow'>
                 <ActionButton name={"Delete"} color='#ffa2a2' onClickFunction={deleteData} disabled={currentIndex === null}/>
                 <div>
@@ -105,7 +103,6 @@ export default function JobOrder({jobs, setJobs, products}) {
             <div id='table'>
                 <ReactTable headers={header} datas={jobs} currentIndex={null} onClickHandler={onClickRow}/>
             </div>
-            
         </>
     );
 }

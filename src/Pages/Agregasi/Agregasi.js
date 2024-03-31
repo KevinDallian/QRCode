@@ -7,7 +7,7 @@ import ReactTable from '../../Components/Table/ReactTable';
 import Modal from '../../Components/Modal/Modal';
 import Barcode from 'react-jsbarcode';
 
-export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox}){
+export default function Agregasi({jobs, products, globalOrders, setGlobalOrders, masterboxs, setGlobalMasterbox}){
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
@@ -57,12 +57,13 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
     }
 
     const scanOrder = () => {
-        const randomID = Math.floor(Math.random() * 100);
-        const generatedID = `OR${(randomID).toString().padStart(3, "0")}`;
+        const orders = globalOrders.filter((order) => order.jobID === currentJob.id && order.masterboxID === "");
+        const index = scannedData.length;
+        const order = orders[index];
         const newData = {
-            orderID : generatedID,
+            orderID : order.id,
             masterboxID : "",
-            manufactureDate : new Date("2024/04/22"),
+            manufactureDate : order.manufactureDate,
             orderStatus : "Printed"
         };
         setScannedData([...scannedData, newData]);
@@ -71,9 +72,14 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
     const printMasterBox = () => {
         const existingDataLength = masterboxs.length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/MB${(existingDataLength).toString().padStart(3, "0")}`;
-        const data = {
+        const masterbox = {
+            id : generatedID,
+            productID : currentJob.productID,
+            jobID : currentJob.id
+        }
+        const printData = {
+            id : generatedID,
             productName : product.name,
-            masterboxID : generatedID,
             nie : product.nie,
             expiredDate : formatDate(currentJob.expiredDate),
             quantity : currentJob.quantity,
@@ -81,8 +87,18 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
             manufacturer : "PT Pharma Health Care Indonesia",
             batchNo : currentJob.batchNo,
         };
-        setGlobalMasterbox([...masterboxs, data]);
-        setPrintData(data);
+        let globalArrayOrders = [...globalOrders];
+        const updatedOrders = globalArrayOrders.map((order) => {
+            if (scannedData.find((data) => data.orderID === order.id)){
+                order.masterboxID = generatedID;
+                order.status = "Printed";
+            }
+            return order;
+        });
+        setGlobalOrders(updatedOrders);
+        console.log(updatedOrders);
+        setGlobalMasterbox([...masterboxs, masterbox]);
+        setPrintData(printData);
         toggleModal("PrintModal");
     }
 
@@ -95,8 +111,8 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
             {showPrintModal && <PrintModal data={printData} toggleModal={()=>endPrint()}/>}
             <div className='flex-row job-display'>
                 <div className='col'>
-                    <JobList name={"Job ID"} detail={currentJob.id}/>
-                    <JobList name={"Produk"} detail={currentJob.productID}/>
+                    <JobList name={"Job ID"} detail={currentJob.id} />
+                    <JobList name={"Produk"} detail={currentJob.productID} />
                     <JobList name={"Batch No"} detail={currentJob.batchNo} />
                 </div>
                 <div className='col'>
@@ -124,7 +140,7 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
 function PrintModal({data, toggleModal}) {
     
     return (
-        <Modal width='40vw'>
+        <Modal width='45vw'>
             <div>
                 <h1>{data.productName}</h1>
                 <div className='flex-space-between'>
@@ -156,11 +172,10 @@ function PrintModal({data, toggleModal}) {
                         <p>{data.manufacturer}</p>
                     </div>
                 </div>
-                
             </div>
             <div id='barcode'>
                 <p>Batch : {data.batchNo}</p>
-                <Barcode value={data.masterboxID} options={{ format: 'code128' }} renderer="svg"/>
+                <Barcode value={data.id} options={{ format: 'code128' }} renderer="svg"/>
             </div>
             <ActionButton id='printBtn' name={"Print"} onClickFunction={()=>{toggleModal()}}/>
         </Modal>

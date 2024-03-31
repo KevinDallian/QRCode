@@ -37,6 +37,7 @@ export function OptionForm({variableName, options, value, setValue}) {
             <div className='box'>
                 <label id='label'>{variableName}</label>
                 <select value={value} onChange={(e)=>setValue(e.target.value)}>
+                    <option value=''>Pilih {variableName}</option>
                     {optionList}
                 </select>
             </div>

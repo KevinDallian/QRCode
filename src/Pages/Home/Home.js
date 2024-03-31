@@ -14,6 +14,7 @@ export default function Home() {
             <Link className='homeLink' to="/jobOrder"> <DisplayButton image={jobLogo} text={"Job Order"}/> </Link>
             <Link className='homeLink' to="/serialisasi"> <DisplayButton image={serialisasiLogo} text={"Serialisasi"}/> </Link>
             <Link className='homeLink' to="/agregasi"> <DisplayButton image={agregasiLogo} text={"Agregasi"}/> </Link>
+            <Link className='homeLink' to="/dataDemo"> <DisplayButton image={agregasiLogo} text={"Data Demo"}/> </Link>
         </div>
         </>
     );

@@ -5,7 +5,6 @@ import ReactTable from '../../Components/Table/ReactTable';
 import { useState } from 'react';
 import Modal from '../../Components/Modal/Modal';
 import QRCode from 'react-qr-code';
-import { useEffect } from 'react';
 
 export default function Serialisasi({jobs, products, globalOrders, setGlobalOrders}){
     const headers = ['No', 'Order ID', 'Job ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
@@ -14,17 +13,19 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
     const [currentJob, setCurrentJob] = useState({});
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [orders, setOrders] = useState([]);
-    const [currentProduct, setCurrentProduct] = useState({});
 
-    useEffect(() => {
-        generateData(currentJob);
-    }, [currentProduct]);
-    
+
     const loadJob = (index) => {
         const job = jobs[index];
         const product = products.find((product) => product.id === job.productID);
-        setCurrentProduct(product);
         setCurrentJob(job);
+        if (globalOrders.some((order) => order.jobID === job.id)) {
+            const orders = globalOrders.filter((order) => order.jobID === job.id);
+            setOrders(orders);
+        } else {
+            console.log(product);
+            generateData(job, product);
+        }
     }
 
     const endJob = () => {
@@ -42,7 +43,6 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
         } else if (modalType === "PrintModal") {
             setShowPrintModal(!showPrintModal);
         }
-        
     }
 
     const endPrint = () => {
@@ -59,11 +59,11 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
         }
     }
 
-    const generateData = (job) => {
+    const generateData = (job, product) => {
         let generatedData = [];
         for (let i=0;i<job.quantity;i++) {
             const existingDataLength = generatedData.length;
-            const generatedID = `(90)${currentProduct.nie}(91)${job.expiredDate}(00)${job.batchNo}(01)${(existingDataLength+1).toString().padStart(3, "0")}`;
+            const generatedID = `(90)${product.nie}(91)${job.expiredDate}(00)${job.batchNo}(01)${(existingDataLength+1).toString().padStart(3, "0")}`;
             const newData = {
                 id : generatedID,
                 jobID : job.id,
@@ -73,7 +73,8 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
             };
             generatedData.push(newData);
         }
-        setOrders(generatedData)
+        setOrders(generatedData);
+        setGlobalOrders(...globalOrders, generatedData);
     }
 
     return (
@@ -178,7 +179,7 @@ function PrintModal({data, toggleModal, job}) {
         }
     }
 
-    const dataToBePrinted = data.map((d, index) => {
+    const dataToBePrinted = data.map((data, index) => {
         return (
             <div key={index} className='modal-border flex-space-between'>
                 <table id='table'>
@@ -193,7 +194,7 @@ function PrintModal({data, toggleModal, job}) {
                         </tr>
                         <tr>
                             <th>Mfg. Date</th>
-                            <td>{formatDate(d.manufactureDate)}</td>
+                            <td>{formatDate(data.manufactureDate)}</td>
                         </tr>
                         <tr>
                             <th>HET</th>
@@ -202,8 +203,8 @@ function PrintModal({data, toggleModal, job}) {
                     </tbody>
                 </table>
                 <div className='qr-code'>
-                    <QRCode value={d.id} size={128}/>
-                    <p>{d.id}</p>
+                    <QRCode value={data.id} size={128}/>
+                    <p>{data.id}</p>
                 </div>
             </div>
         );
