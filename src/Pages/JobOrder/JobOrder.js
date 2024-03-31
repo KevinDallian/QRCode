@@ -11,11 +11,11 @@ export default function JobOrder({jobs, setJobs, products}) {
     const [expiredDate, setDate] = useState('');
     const [quantity, setQuantity] = useState('');
     const [jobStatus, setJobStatus] = useState('Active');
-    const productsID = products.map((product) => product.id);
+    const productsID = products.map((product) => `${product.id} - ${product.name}`);
 
     const [currentIndex, setCurrentIndex] = useState(null);
 
-    const header = ["ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
+    const header = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
 
     function validateData(){
         return productID === "" || batchNo === "" || expiredDate === "" || quantity === "" || jobStatus === "";

@@ -20,7 +20,7 @@ function App() {
               <Route index element={<Home />}></Route>
               <Route path='registrasi' element={<Registrasi products={products} setProducts={setProducts}/>}/>
               <Route path='jobOrder' element={<JobOrder jobs={jobs} setJobs={setJobs} products={products}/>}/>
-              <Route path='serialisasi' element={<Serialisasi jobs={jobs} setGlobalOrders={setOrders}/>} />
+              <Route path='serialisasi' element={<Serialisasi jobs={jobs} products={products} setGlobalOrders={setOrders}/>} />
               <Route path='agregasi' element={<Agregasi jobs={jobs} products={products} masterboxs={masterboxs} setGlobalMasterbox={setMasterbox}/>}/>
             </Route>
           </Routes>

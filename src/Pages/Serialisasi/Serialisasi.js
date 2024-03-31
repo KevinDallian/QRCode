@@ -5,19 +5,26 @@ import ReactTable from '../../Components/Table/ReactTable';
 import { useState } from 'react';
 import Modal from '../../Components/Modal/Modal';
 import QRCode from 'react-qr-code';
+import { useEffect } from 'react';
 
-export default function Serialisasi({jobs, setGlobalOrders}){
-    const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
+export default function Serialisasi({jobs, products, setGlobalOrders}){
+    const headers = ['No', 'Order ID', 'Job ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
     const [currentJob, setCurrentJob] = useState({});
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [orders, setOrders] = useState([]);
+    const [currentProduct, setCurrentProduct] = useState({});
+
+    useEffect(() => {
+        generateData(currentJob);
+    }, [currentProduct]);
     
     const loadJob = (index) => {
         const job = jobs[index];
+        const product = products.find((product) => product.id === job.productID);
+        setCurrentProduct(product);
         setCurrentJob(job);
-        generateData(job);
     }
 
     const endJob = () => {
@@ -56,7 +63,7 @@ export default function Serialisasi({jobs, setGlobalOrders}){
         let generatedData = [];
         for (let i=0;i<job.quantity;i++) {
             const existingDataLength = generatedData.length;
-            const generatedID = `OR${(existingDataLength+1).toString().padStart(3, "0")}`;
+            const generatedID = `(90)${currentProduct.nie}(91)${job.expiredDate}(00)${job.batchNo}(01)${(existingDataLength+1).toString().padStart(3, "0")}`;
             const newData = {
                 id : generatedID,
                 jobID : job.id,
@@ -121,7 +128,7 @@ export function JobList({name, detail}) {
 
 export function JobModal({toggleModal, loadJob, jobs}) {
     const [currentIndex, setCurrentIndex] = useState(null);
-    const modalHeaders = ["ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
+    const modalHeaders = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
 
     const onClickTableModal = (index) => {
         setCurrentIndex(index);

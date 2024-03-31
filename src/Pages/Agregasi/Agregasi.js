@@ -59,9 +59,7 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
     const scanOrder = () => {
         const randomID = Math.floor(Math.random() * 100);
         const generatedID = `OR${(randomID).toString().padStart(3, "0")}`;
-        const index = scannedData.length + 1;
         const newData = {
-            no : index,
             orderID : generatedID,
             masterboxID : "",
             manufactureDate : new Date("2024/04/22"),
@@ -72,7 +70,7 @@ export default function Agregasi({jobs, products, masterboxs, setGlobalMasterbox
 
     const printMasterBox = () => {
         const existingDataLength = masterboxs.length + 1;
-        const generatedID = `MB${(existingDataLength).toString().padStart(3, "0")}`;
+        const generatedID = `${product.nie}/${currentJob.batchNo}/MB${(existingDataLength).toString().padStart(3, "0")}`;
         const data = {
             productName : product.name,
             masterboxID : generatedID,

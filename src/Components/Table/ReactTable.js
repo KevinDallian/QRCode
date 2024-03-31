@@ -24,7 +24,11 @@ export default function ReactTable({headers, datas, currentIndex, onClickHandler
         });
         return (
             <tr className='row' key={index} onClick={()=>onClickHandler(index)} style={currentIndex === index ? {backgroundColor: "#d3ffff"} : {}}>
+                <>
+                <td className='data' key={index}>{index+1}</td>
                 {cells}
+                </>
+                
             </tr>
         );
     });

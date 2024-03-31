@@ -13,7 +13,7 @@ export default function Registrasi({products, setProducts}){
     const [storage, setStorage] = useState('');
     const [currentIndex, setCurrentIndex] = useState(null);
     
-    const header = ["ID Produk", "Nama Produk", "NIE", "HET", "Kuantitas per Box", "Storage"];
+    const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Kuantitas per Box", "Storage"];
 
     function validateData(){
         return name === "" || nie === "" || het === "" || quantity === "" || storage === "";
