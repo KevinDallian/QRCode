@@ -13,7 +13,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
     const [currentJob, setCurrentJob] = useState({});
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [orders, setOrders] = useState([]);
-
+    console.log("Global Orders: " + globalOrders);
 
     const loadJob = (index) => {
         const job = jobs[index];
@@ -23,7 +23,6 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
             const orders = globalOrders.filter((order) => order.jobID === job.id);
             setOrders(orders);
         } else {
-            console.log(product);
             generateData(job, product);
         }
     }
@@ -74,7 +73,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
             generatedData.push(newData);
         }
         setOrders(generatedData);
-        setGlobalOrders(...globalOrders, generatedData);
+        setGlobalOrders([...globalOrders, ...generatedData]);
     }
 
     return (

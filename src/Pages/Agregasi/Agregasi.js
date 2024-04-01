@@ -58,6 +58,7 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
 
     const scanOrder = () => {
         const orders = globalOrders.filter((order) => order.jobID === currentJob.id && order.masterboxID === "");
+        if (orders === undefined || orders.length === 0) return;
         const index = scannedData.length;
         const order = orders[index];
         const newData = {
