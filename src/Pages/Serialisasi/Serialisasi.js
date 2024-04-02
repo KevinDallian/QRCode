@@ -68,7 +68,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
                 jobID : job.id,
                 masterboxID : "",
                 manufactureDate : new Date().toString(),
-                orderStatus : "Not Printed"
+                status : "Not Printed"
             };
             generatedData.push(newData);
         }
@@ -211,7 +211,7 @@ function PrintModal({data, toggleModal, job}) {
     return (
         <Modal width='40vw'>
             {dataToBePrinted}
-            <button onClick={toggleModal}>Close</button>
+            <button style={{marginBottom:"20px"}}onClick={toggleModal}>Close</button>
         </Modal>
     );
 }
