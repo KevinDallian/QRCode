@@ -97,7 +97,6 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             return order;
         });
         setGlobalOrders(updatedOrders);
-        console.log(updatedOrders);
         setGlobalMasterbox([...masterboxs, masterbox]);
         setPrintData(printData);
         toggleModal("PrintModal");

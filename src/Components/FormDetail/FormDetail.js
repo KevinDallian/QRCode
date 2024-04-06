@@ -30,14 +30,14 @@ export function DateForm({variableName, value, setValue}){
     );
 }
 
-export function OptionForm({variableName, options, value, setValue}) {
+export function OptionForm({variableName, options, value, setValue, hasDefaultValue = true}) {
     const optionList = options.map((option) => <option key={option} value={option}>{option}</option>);
     return (
         <>
             <div className='box'>
                 <label id='label'>{variableName}</label>
                 <select value={value} onChange={(e)=>setValue(e.target.value)}>
-                    <option value=''>Pilih {variableName}</option>
+                    {hasDefaultValue && <option value=''>Pilih {variableName}</option> }
                     {optionList}
                 </select>
             </div>

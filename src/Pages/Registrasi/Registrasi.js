@@ -1,22 +1,46 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Registrasi.css';
 import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
 import { Link } from 'react-router-dom';
-import { FormDetail } from '../../Components/FormDetail/FormDetail';
+import { FormDetail, OptionForm } from '../../Components/FormDetail/FormDetail';
+import DynamicForm from '../../Components/DynamicForm/DynamicForm';
 
 export default function Registrasi({products, setProducts}){
     const [name, setName] = useState('');
     const [nie, setNIE] = useState('');
     const [het, setHET] = useState('');
-    const [quantity, setQuantity] = useState('');
     const [storage, setStorage] = useState('');
     const [currentIndex, setCurrentIndex] = useState(null);
+    const [aggregationLvl, setAggregationLvl] = useState(0);
+    const [aggregations, setAggregations] = useState([]);
     
-    const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Kuantitas per Box", "Storage"];
+    const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Storage"];
+
+    const onAggregationFormChange = (index, event) => {
+        let data = [...aggregations];
+        
+        if (!data[index]) {
+            return
+        }
+        data[index][event.target.name] = event.target.value;
+        setAggregations(data);
+    }
+
+    const setAggregationForm = (quantity) => {
+        let newFields = [{}];
+        for (let i=1;i<quantity;i++) {
+            newFields.push({name:'', quantity:0});
+        }
+        setAggregations(newFields);
+    }
+    
+    useEffect(() => {
+        setAggregationForm(aggregationLvl);
+    }, [aggregationLvl, setAggregationLvl]);
 
     function validateData(){
-        return name === "" || nie === "" || het === "" || quantity === "" || storage === "";
+        return name === "" || nie === "" || het === "" || storage === "";
     }
 
     function onClickRow(index){
@@ -33,7 +57,6 @@ export default function Registrasi({products, setProducts}){
                 name: name,
                 nie: nie,
                 het: het,
-                quantity: quantity,
                 storage: storage,
               };
               const newData = [...products.slice(0, currentIndex), updatedData, ...products.slice(currentIndex + 1)];
@@ -46,7 +69,6 @@ export default function Registrasi({products, setProducts}){
                 name : name,
                 nie : nie,
                 het : het,
-                quantity : quantity,
                 storage : storage
             };
             setProducts([...products, newData]);
@@ -64,7 +86,6 @@ export default function Registrasi({products, setProducts}){
         setName('');
         setNIE('');
         setHET('');
-        setQuantity('');
         setStorage('');
         setCurrentIndex(null);
     }
@@ -73,7 +94,6 @@ export default function Registrasi({products, setProducts}){
         setName(data.name);
         setNIE(data.nie);
         setHET(data.het);
-        setQuantity(data.quantity);
         setStorage(data.storage);
     }
     
@@ -81,14 +101,17 @@ export default function Registrasi({products, setProducts}){
         <>
             <Link to="/">Back</Link>
             <h1 className='title'>Registrasi Produk</h1>
-            <div className='flex-row'>
+            <div className='flex-space-between form-border'>
                 <form id='form'>
                     <FormDetail variableName={"Nama Produk"} value={name} setValue={(e)=>setName(e)} />
                     <FormDetail variableName={"NIE"} value={nie} setValue={(e)=>setNIE(e)}/>
                     <FormDetail variableName={"HET"} value={het} setValue={(e)=>setHET(e)}/>
-                    <FormDetail variableName={"Kuantitas per Box"} value={quantity} setValue={(e)=>setQuantity(e)}/>
                     <FormDetail variableName={"Storage"} value={storage} setValue={(e)=>setStorage(e)}/>
                 </form>
+                <div>
+                    <OptionForm variableName={"Aggregation Level"} options={[1, 2, 3]} value={aggregationLvl} setValue={setAggregationLvl} hasDefaultValue={false}/>
+                    <DynamicForm aggregations={aggregations} onFormDataChange={onAggregationFormChange}/>
+                </div>
                 <div id='twoBtn' className='flex-column'>
                     <ActionButton name={"Import"} color='#f1f1f1' onClickFunction={()=> {console.log('Import')}}/>
                     <ActionButton name={"Export"} color='#f1f1f1' onClickFunction={()=> {console.log('Export')}}/>

@@ -1,5 +1,4 @@
 .box { 
-    width: 50vw;
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-items: left;
