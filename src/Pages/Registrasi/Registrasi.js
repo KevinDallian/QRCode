@@ -12,10 +12,41 @@ export default function Registrasi({products, setProducts}){
     const [het, setHET] = useState('');
     const [storage, setStorage] = useState('');
     const [currentIndex, setCurrentIndex] = useState(null);
-    const [aggregationLvl, setAggregationLvl] = useState(0);
+    const [aggregationLvl, setAggregationLvl] = useState(1);
     const [aggregations, setAggregations] = useState([]);
+    const [currentProducts, setCurrentProducts] = useState(products.map((product) => {
+        return {
+            id: product.id,
+            name: product.name,
+            nie: product.nie,
+            het: product.het,
+            storage: product.storage,
+            aggregation: product.aggregations.length
+        }
+    }));
     
-    const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Storage"];
+    const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Storage", "Aggregation Level"];
+
+    useEffect(() => {
+        setAggregationForm(aggregationLvl);
+    }, aggregationLvl);
+
+    useEffect(() => {
+        updateCurrentProduct();
+    }, [products]);
+
+    const updateCurrentProduct = () => {
+        setCurrentProducts(products.map((product) => {
+            return {
+                id: product.id,
+                name: product.name,
+                nie: product.nie,
+                het: product.het,
+                storage: product.storage,
+                aggregation: product.aggregations.length
+            }
+        }));
+    }
 
     const onAggregationFormChange = (index, event) => {
         let data = [...aggregations];
@@ -34,13 +65,9 @@ export default function Registrasi({products, setProducts}){
         }
         setAggregations(newFields);
     }
-    
-    useEffect(() => {
-        setAggregationForm(aggregationLvl);
-    }, [aggregationLvl, setAggregationLvl]);
 
     function validateData(){
-        return name === "" || nie === "" || het === "" || storage === "";
+        return name === "" || nie === "" || het === "" || storage === "" ||  aggregations.some((aggregation) => aggregation.name === "" || aggregation.quantity === 0);
     }
 
     function onClickRow(index){
@@ -58,6 +85,7 @@ export default function Registrasi({products, setProducts}){
                 nie: nie,
                 het: het,
                 storage: storage,
+                aggregations: aggregations
               };
               const newData = [...products.slice(0, currentIndex), updatedData, ...products.slice(currentIndex + 1)];
               setProducts(newData);
@@ -69,7 +97,8 @@ export default function Registrasi({products, setProducts}){
                 name : name,
                 nie : nie,
                 het : het,
-                storage : storage
+                storage : storage,
+                aggregations : aggregations
             };
             setProducts([...products, newData]);
         }
@@ -88,6 +117,8 @@ export default function Registrasi({products, setProducts}){
         setHET('');
         setStorage('');
         setCurrentIndex(null);
+        setAggregations([]);
+        setAggregationLvl(0);
     }
     
     function setFormData(data){
@@ -95,6 +126,8 @@ export default function Registrasi({products, setProducts}){
         setNIE(data.nie);
         setHET(data.het);
         setStorage(data.storage);
+        setAggregationLvl(data.aggregations.length);
+        setAggregations(data.aggregations);
     }
     
     return (
@@ -126,7 +159,7 @@ export default function Registrasi({products, setProducts}){
                 </div>
             </div>
             <div id='table'>
-                <ReactTable headers={header} datas={products} currentIndex={currentIndex} onClickHandler={onClickRow}/>
+                <ReactTable headers={header} datas={currentProducts} currentIndex={currentIndex} onClickHandler={onClickRow}/>
             </div>
         </>
     );
