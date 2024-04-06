@@ -6,12 +6,13 @@ import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
 
 export default function JobOrder({jobs, setJobs, products}) {
-    const [productID, setProductID] = useState('PR001');
+    const [productID, setProductID] = useState('');
     const [batchNo, setBatchNo] = useState('');
     const [expiredDate, setDate] = useState('');
     const [quantity, setQuantity] = useState('');
     const [jobStatus, setJobStatus] = useState('Active');
     const productsID = products.map((product) => `${product.id}`);
+    const productsName = products.map((product) => `${product.id + ' - ' + product.name}`);
 
     const [currentIndex, setCurrentIndex] = useState(null);
 
@@ -84,8 +85,8 @@ export default function JobOrder({jobs, setJobs, products}) {
             <Link to="/">Back</Link>
             <h1 className='title'>Job Order</h1>
             <div>
-                <form id='form'>
-                    <OptionForm variableName='Produk' options={productsID} value={productID} setValue={(e)=>{setProductID(e)}}/>
+                <form id='form' style={{width:'50vw'}}>
+                    <OptionForm variableName='Produk' options={productsName} value={productID} setValue={(e)=>{setProductID(e)}}/>
                     <FormDetail variableName='Batch No' value={batchNo} setValue={(e)=>{setBatchNo(e)}}/>
                     <DateForm variableName='Expired Date' value={expiredDate} setValue={(e)=>{setDate(e)}}/>
                     <FormDetail variableName='Order Qty' value={quantity} setValue={(e)=>{setQuantity(e)}}/>
