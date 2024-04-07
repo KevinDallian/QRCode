@@ -16,7 +16,7 @@ export default function JobOrder({jobs, setJobs, products}) {
     const [currentProduct, setCurrentProduct] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(null);
 
-    const header = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
+    const header = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Top Aggregation Quantity", "Order Quantity", "Job Status"];
 
     useEffect(() => {
         if (productID !== null) {
@@ -55,7 +55,8 @@ export default function JobOrder({jobs, setJobs, products}) {
                 productID: productID,
                 batchNo: batchNo,
                 expiredDate: expiredDate,
-                quantity: quantity,
+                topAggregationQty : topQuantity,
+                productQty: quantity,
                 jobStatus: jobStatus,
               };
               const newData = [...jobs.slice(0, currentIndex), updatedData, ...jobs.slice(currentIndex + 1)];
@@ -68,7 +69,8 @@ export default function JobOrder({jobs, setJobs, products}) {
                 productID : productID,
                 batchNo : batchNo,
                 expiredDate : expiredDate,
-                quantity : quantity,
+                topAggregationQty : topQuantity,
+                productQty: quantity,
                 jobStatus : jobStatus
             };
             setJobs([...jobs, newData]);
@@ -86,7 +88,8 @@ export default function JobOrder({jobs, setJobs, products}) {
         setProductID('');
         setBatchNo('');
         setDate('');
-        setQuantity('');
+        setTopQuantity(0);
+        setQuantity(0);
         setJobStatus('');
         setCurrentIndex(null);
     }
@@ -97,6 +100,7 @@ export default function JobOrder({jobs, setJobs, products}) {
         setDate(data.expiredDate);
         setQuantity(data.quantity);
         setJobStatus(data.jobStatus);
+        setTopQuantity(data.topAggregationQty);
     }
 
     return (
@@ -108,11 +112,11 @@ export default function JobOrder({jobs, setJobs, products}) {
                     <OptionForm variableName='Produk' options={productsID} value={productID} setValue={(e)=>{setProductID(e)}}/>
                     <FormDetail variableName='Batch No' value={batchNo} setValue={(e)=>{setBatchNo(e)}}/>
                     <DateForm variableName='Expired Date' value={expiredDate} setValue={(e)=>{setDate(e)}}/>
-                    <NumberForm variableName='Top Aggregation Qty' value={topQuantity} setValue={(e)=>{setTopQuantity(e)}}/>
+                    <NumberForm variableName='Top Aggregation Qty' value={topQuantity} setValue={setTopQuantity}/>
                     <NumberForm variableName='Product Qty' value={quantity} setValue={setQuantity}/>
                     <OptionForm variableName='Job Status' options={['Active', 'Cancel', 'Suspended']} value={jobStatus} setValue={(e)=>{setJobStatus(e)}}/>
                 </form>
-                <div style={{marginLeft: '5vw'}}>
+                <div style={{marginLeft: '10vw'}}>
                     {currentProduct !== null && 
                     <>
                         <div style={{fontWeight: 'bold'}}>Product Quantity Estimation : </div>
@@ -123,12 +127,10 @@ export default function JobOrder({jobs, setJobs, products}) {
                                 let estimatedQuantity = 0;
                                 if (aggregation.level > 1 ) {
                                     const previousQuantity = currentProduct.aggregations.slice(0, index).reduce((acc, curr) => acc / curr.quantity, quantity);
-                                    console.log(previousQuantity);
                                     estimatedQuantity = previousQuantity / aggregation.quantity;
                                 } else {
                                     estimatedQuantity = quantity / aggregation.quantity;
                                 }
-                                
                                 return (
                                     <div key={index}>
                                         <div style={{fontWeight: 'bold'}}>Level {aggregation.level} : {aggregation.name}</div>

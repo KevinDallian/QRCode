@@ -13,12 +13,12 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
     const [currentJob, setCurrentJob] = useState({});
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [orders, setOrders] = useState([]);
-    console.log("Global Orders: " + globalOrders);
 
     const loadJob = (index) => {
         const job = jobs[index];
         const product = products.find((product) => product.id === job.productID);
         setCurrentJob(job);
+        console.log(job);
         if (globalOrders.some((order) => order.jobID === job.id)) {
             const orders = globalOrders.filter((order) => order.jobID === job.id);
             setOrders(orders);
@@ -60,7 +60,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
 
     const generateData = (job, product) => {
         let generatedData = [];
-        for (let i=0;i<job.quantity;i++) {
+        for (let i=0;i<job.productQty;i++) {
             const existingDataLength = generatedData.length;
             const generatedID = `(90)${product.nie}(91)${job.expiredDate}(00)${job.batchNo}(01)${(existingDataLength+1).toString().padStart(3, "0")}`;
             const newData = {
@@ -110,7 +110,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
                 <p>Skipped          :</p>
                 <p>Cancelled        :</p>
             </div>
-            <div id='table'>
+            <div id='table-serialisasi'>
                 <ReactTable headers={headers} datas={orders} onClickHandler={(e)=>{console.log(e)}}/>
             </div>
         </>
@@ -128,7 +128,7 @@ export function JobList({name, detail}) {
 
 export function JobModal({toggleModal, loadJob, jobs}) {
     const [currentIndex, setCurrentIndex] = useState(null);
-    const modalHeaders = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
+    const modalHeaders = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Top Aggregation Quantity", "Order Quantity", "Job Status"];
 
     const onClickTableModal = (index) => {
         setCurrentIndex(index);

@@ -29,9 +29,11 @@
     line-height: 1vh;
 }
 
-#table {
+#table-serialisasi {
+    top: 0;
     margin-left: 2vw;
-    margin-bottom: 5vh;
+    height: 40vh;
+    overflow: scroll;
 }
 
 .modal-btn {
