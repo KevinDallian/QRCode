@@ -25,13 +25,17 @@ export default function JobOrder({jobs, setJobs, products}) {
                 setCurrentProduct(selectedProduct);
             }
         }
-    }, [productID]);
+    }, [productID, products]);
 
     useEffect(() => {
         if (currentProduct) {
-            console.log(currentProduct);
+            const aggregations = currentProduct.aggregations.sort((a, b) => b.level - a.level);
+            if (aggregations.length > 0) {
+                const multipliedQuantity = aggregations.reduce((acc, curr) => acc * curr.quantity, topQuantity);
+                setQuantity(multipliedQuantity);
+            }
         }
-    }, [topQuantity]);
+    }, [topQuantity, currentProduct]);
 
     function validateData(){
         return productID === "" || batchNo === "" || expiredDate === "" || quantity === "" || jobStatus === "";
@@ -108,6 +112,34 @@ export default function JobOrder({jobs, setJobs, products}) {
                     <NumberForm variableName='Product Qty' value={quantity} setValue={setQuantity}/>
                     <OptionForm variableName='Job Status' options={['Active', 'Cancel', 'Suspended']} value={jobStatus} setValue={(e)=>{setJobStatus(e)}}/>
                 </form>
+                <div style={{marginLeft: '5vw'}}>
+                    {currentProduct !== null && 
+                    <>
+                        <div style={{fontWeight: 'bold'}}>Product Quantity Estimation : </div>
+                        <div>{quantity} Products</div>
+                        {currentProduct.aggregations
+                            .sort((a, b) => a.level - b.level)
+                            .map((aggregation, index) => {
+                                let estimatedQuantity = 0;
+                                if (aggregation.level > 1 ) {
+                                    const previousQuantity = currentProduct.aggregations.slice(0, index).reduce((acc, curr) => acc / curr.quantity, quantity);
+                                    console.log(previousQuantity);
+                                    estimatedQuantity = previousQuantity / aggregation.quantity;
+                                } else {
+                                    estimatedQuantity = quantity / aggregation.quantity;
+                                }
+                                
+                                return (
+                                    <div key={index}>
+                                        <div style={{fontWeight: 'bold'}}>Level {aggregation.level} : {aggregation.name}</div>
+                                        <div>Capacity : {aggregation.quantity}</div>
+                                        <div>Quantity : {estimatedQuantity}</div>
+                                    </div>
+                                );
+                            })}
+                    </>
+                    }
+                </div>
             </div>
             <div id='buttonRow'>
                 <ActionButton name={"Delete"} color='#ffa2a2' onClickFunction={deleteData} disabled={currentIndex === null}/>
