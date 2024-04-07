@@ -1,7 +1,6 @@
 import './DynamicForm.css';
 
 export default function DynamicForm({aggregations, onFormDataChange}) {
-    
     const formData = aggregations.map((aggregation, index) => {
         return (
             <div key={index} className="form-row">

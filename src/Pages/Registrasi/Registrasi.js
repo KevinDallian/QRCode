@@ -13,7 +13,7 @@ export default function Registrasi({products, setProducts}){
     const [storage, setStorage] = useState('');
     const [currentIndex, setCurrentIndex] = useState(null);
     const [aggregationLvl, setAggregationLvl] = useState(1);
-    const [aggregations, setAggregations] = useState([]);
+    const [aggregations, setAggregations] = useState([{name:'', quantity:0, level: 1}]);
     const [currentProducts, setCurrentProducts] = useState(products.map((product) => {
         return {
             id: product.id,
@@ -29,7 +29,7 @@ export default function Registrasi({products, setProducts}){
 
     useEffect(() => {
         setAggregationForm(aggregationLvl);
-    }, aggregationLvl);
+    }, [aggregationLvl]);
 
     useEffect(() => {
         updateCurrentProduct();
@@ -50,7 +50,6 @@ export default function Registrasi({products, setProducts}){
 
     const onAggregationFormChange = (index, event) => {
         let data = [...aggregations];
-        
         if (!data[index]) {
             return
         }
@@ -59,9 +58,9 @@ export default function Registrasi({products, setProducts}){
     }
 
     const setAggregationForm = (quantity) => {
-        let newFields = [{}];
-        for (let i=1;i<quantity;i++) {
-            newFields.push({name:'', quantity:0});
+        let newFields = [];
+        for (let i=0;i<quantity;i++) {
+            newFields.push({name:'', quantity:0, level: i+1});
         }
         setAggregations(newFields);
     }

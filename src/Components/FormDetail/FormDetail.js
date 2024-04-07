@@ -11,6 +11,17 @@ export function FormDetail({variableName, value, setValue}){
     );
 }
 
+export function NumberForm({variableName, value, setValue}){
+    return (
+        <>
+            <div className='box'>
+                <label id='label'>{variableName}</label>
+                <input value={value} type={'number'} min={0} onChange={(e)=>setValue(e.target.value)}/>
+            </div>
+        </>
+    );
+}
+
 export function DateForm({variableName, value, setValue}){
     const formatDate = (date) => {
         if (!date) return "";

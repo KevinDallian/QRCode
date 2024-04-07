@@ -1,7 +1,7 @@
-import { FormDetail, DateForm, OptionForm } from '../../Components/FormDetail/FormDetail';
+import { FormDetail, DateForm, OptionForm, NumberForm } from '../../Components/FormDetail/FormDetail';
 import './JobOrder.css';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
 
@@ -9,14 +9,29 @@ export default function JobOrder({jobs, setJobs, products}) {
     const [productID, setProductID] = useState('');
     const [batchNo, setBatchNo] = useState('');
     const [expiredDate, setDate] = useState('');
+    const [topQuantity, setTopQuantity] = useState(0);
     const [quantity, setQuantity] = useState('');
     const [jobStatus, setJobStatus] = useState('Active');
     const productsID = products.map((product) => `${product.id}`);
-    const productsName = products.map((product) => `${product.id + ' - ' + product.name}`);
-
+    const [currentProduct, setCurrentProduct] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(null);
 
     const header = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Order Quantity", "Job Status"];
+
+    useEffect(() => {
+        if (productID !== null) {
+            const selectedProduct = products.find((product) => product.id === productID);
+            if (selectedProduct) {
+                setCurrentProduct(selectedProduct);
+            }
+        }
+    }, [productID]);
+
+    useEffect(() => {
+        if (currentProduct) {
+            console.log(currentProduct);
+        }
+    }, [topQuantity]);
 
     function validateData(){
         return productID === "" || batchNo === "" || expiredDate === "" || quantity === "" || jobStatus === "";
@@ -84,12 +99,13 @@ export default function JobOrder({jobs, setJobs, products}) {
         <>
             <Link to="/">Back</Link>
             <h1 className='title'>Job Order</h1>
-            <div>
-                <form id='form' style={{width:'50vw'}}>
-                    <OptionForm variableName='Produk' options={productsName} value={productID} setValue={(e)=>{setProductID(e)}}/>
+            <div className='flex-row'>
+                <form id='form'>
+                    <OptionForm variableName='Produk' options={productsID} value={productID} setValue={(e)=>{setProductID(e)}}/>
                     <FormDetail variableName='Batch No' value={batchNo} setValue={(e)=>{setBatchNo(e)}}/>
                     <DateForm variableName='Expired Date' value={expiredDate} setValue={(e)=>{setDate(e)}}/>
-                    <FormDetail variableName='Order Qty' value={quantity} setValue={(e)=>{setQuantity(e)}}/>
+                    <NumberForm variableName='Top Aggregation Qty' value={topQuantity} setValue={(e)=>{setTopQuantity(e)}}/>
+                    <NumberForm variableName='Product Qty' value={quantity} setValue={setQuantity}/>
                     <OptionForm variableName='Job Status' options={['Active', 'Cancel', 'Suspended']} value={jobStatus} setValue={(e)=>{setJobStatus(e)}}/>
                 </form>
             </div>
