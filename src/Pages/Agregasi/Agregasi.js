@@ -16,7 +16,7 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
     const [showPrintModal, setShowPrintModal] = useState(false);
 
     const [aggregationQty, setAggregationQty] = useState(0);
-    const [aggregationLvl, setAggregationLvl] = useState(null);
+    const [aggregationLvl, setAggregationLvl] = useState('');
     const [currentJob, setCurrentJob] = useState({});
     const [scannedData, setScannedData] = useState([]);
     const [printData, setPrintData] = useState(null);
@@ -74,7 +74,6 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
 
     const scanOrder = () => {
         const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
-        
         if (aggregation.level === 1) {
             const orders = globalOrders.filter((order) => order.jobID === currentJob.id && order.masterboxID === "");
             if (orders === undefined || orders.length === 0) return;
@@ -82,20 +81,20 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             const order = orders[index];
             const newData = {
                 orderID : order.id,
-                masterboxID : "",
+                masterboxID : order.masterboxID,
                 manufactureDate : order.manufactureDate,
                 orderStatus : "Printed"
             };
             setScannedData([...scannedData, newData]);
         } else {
-            const masterboxs = globalMasterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id);
+            const masterboxs = globalMasterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id && masterbox.masterboxID === undefined);
             if (masterboxs === undefined || masterboxs.length === 0) return;
             const index = scannedData.length;
             if (masterboxs[index] == null) return;
             const masterbox = masterboxs[index];
             const newData = {
                 orderID : masterbox.id,
-                masterboxID : "",
+                masterboxID : masterbox.masterboxID || '',
                 manufactureDate : new Date().toString(),
                 orderStatus : "Printed"
             };
@@ -104,8 +103,8 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
     }
 
     const printMasterBox = () => {
-        const existingDataLength = globalMasterboxs.length + 1;
         const masterboxPrefix = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl).prefix;
+        const existingDataLength = globalMasterboxs.filter((masterbox) => masterbox.id.includes(masterboxPrefix)).length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
         const masterbox = {
             id : generatedID,
@@ -119,18 +118,32 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             expiredDate : formatDate(currentJob.expiredDate),
             quantity : product.quantity,
             storage : product.storage,
-            manufacturer : "PT Pharma Health Care Indonesia",
+            manufacturer : "PT Samco Indonesia",
             batchNo : currentJob.batchNo,
         };
-        let globalArrayOrders = [...globalOrders];
-        const updatedOrders = globalArrayOrders.map((order) => {
-            if (scannedData.find((data) => data.orderID === order.id)){
-                order.masterboxID = generatedID;
-                order.status = "Scanned";
-            }
-            return order;
-        });
-        setGlobalOrders(updatedOrders);
+        const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
+        if (aggregation.level === 1) {
+            let globalArrayOrders = [...globalOrders];
+            const updatedOrders = globalArrayOrders.map((order) => {
+                if (scannedData.find((data) => data.orderID === order.id)){
+                    order.masterboxID = generatedID;
+                    order.status = "Scanned";
+                }
+                return order;
+            });
+            setGlobalOrders(updatedOrders);
+        } else {
+            let globalArrayMasterboxs = [...globalMasterboxs];
+            const updatedMasterboxs = globalArrayMasterboxs.map((masterbox) => {
+                if (scannedData.find((data) => data.orderID === masterbox.id)){
+                    masterbox.masterboxID = generatedID;
+                    masterbox.status = "Scanned";
+                }
+                return masterbox;
+            });
+            setGlobalMasterbox(updatedMasterboxs);
+        }
+        setScannedData([]);
         setGlobalMasterbox([...globalMasterboxs, masterbox]);
         setPrintData(printData);
         toggleModal("PrintModal");
