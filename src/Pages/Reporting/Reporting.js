@@ -1,4 +1,4 @@
-import './DataDemo.css';
+import './Reporting.css';
 import { useEffect, useState } from 'react';
 import { OptionForm } from '../../Components/FormDetail/FormDetail';
 import { Link } from 'react-router-dom';
@@ -6,7 +6,7 @@ import Barcode from 'react-jsbarcode';
 import QRCode from 'react-qr-code';
 import Modal from '../../Components/Modal/Modal';
 
-export default function DataDemo({jobs, products, orders, masterboxs}){
+export default function Reporting({jobs, products, orders, masterboxs}){
     const masterboxIDs = masterboxs.map((masterbox) => `${masterbox.id}`);
     const [masterboxId, setMasterboxId] = useState('');
     const [masterboxData, setMasterboxData] = useState(null);

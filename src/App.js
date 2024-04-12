@@ -5,7 +5,7 @@ import Registrasi from './Pages/Registrasi/Registrasi';
 import Serialisasi from './Pages/Serialisasi/Serialisasi';
 import JobOrder from './Pages/JobOrder/JobOrder';
 import Agregasi from './Pages/Agregasi/Agregasi';
-import DataDemo from './Pages/DataDemo/DataDemo';
+import Reporting from './Pages/Reporting/Reporting';
 import { useState } from 'react';
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
               <Route path='jobOrder' element={<JobOrder jobs={jobs} setJobs={setJobs} products={products}/>}/>
               <Route path='serialisasi' element={<Serialisasi jobs={jobs} products={products} globalOrders={orders} setGlobalOrders={setOrders}/>} />
               <Route path='agregasi' element={<Agregasi jobs={jobs} products={products} globalOrders={orders} setGlobalOrders={setOrders} masterboxs={masterboxs} setGlobalMasterbox={setMasterbox}/>}/>
-              <Route path='dataDemo' element={<DataDemo jobs={jobs} products={products} orders={orders} masterboxs={masterboxs}/>}/>
+              <Route path='reporting' element={<Reporting jobs={jobs} products={products} orders={orders} masterboxs={masterboxs}/>}/>
               <Route path='*'>404 Not Found</Route>
             </Route>
           </Routes>
