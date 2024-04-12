@@ -90,7 +90,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
                     <JobList name={"Batch No"} detail={currentJob.batchNo} />
                 </div>
                 <div className='col'>
-                    <JobList name={"Order Quantity"} detail={currentJob.quantity}/>
+                    <JobList name={"Order Quantity"} detail={currentJob.productQty}/>
                     <JobList name={"Expired Date"} detail={formatDate(currentJob.expiredDate)}/>
                     <JobList name={"Job Status"} detail={currentJob.jobStatus}/>
                 </div>

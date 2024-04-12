@@ -60,7 +60,7 @@ export default function Registrasi({products, setProducts}){
     const setAggregationForm = (quantity) => {
         let newFields = [];
         for (let i=0;i<quantity;i++) {
-            newFields.push({name:'', quantity:0, level: i+1});
+            newFields.push({name:'', quantity:0, prefix:'', level: i+1});
         }
         setAggregations(newFields);
     }

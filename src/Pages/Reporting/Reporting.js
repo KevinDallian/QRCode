@@ -2,13 +2,14 @@ import './Reporting.css';
 import { useEffect, useState } from 'react';
 import { OptionForm } from '../../Components/FormDetail/FormDetail';
 import { Link } from 'react-router-dom';
+import { DateForm } from '../../Components/FormDetail/FormDetail';
 import Barcode from 'react-jsbarcode';
 import QRCode from 'react-qr-code';
 import Modal from '../../Components/Modal/Modal';
 
 export default function Reporting({jobs, products, orders, masterboxs}){
-    const masterboxIDs = masterboxs.map((masterbox) => `${masterbox.id}`);
-    const [masterboxId, setMasterboxId] = useState('');
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
     const [masterboxData, setMasterboxData] = useState(null);
     const [orderData, setOrderData] = useState([]);
     const [jobData, setJobData] = useState([]);
@@ -54,45 +55,16 @@ export default function Reporting({jobs, products, orders, masterboxs}){
             return new Date(date).toISOString().split('T')[0];
         }
     }
-
-    useEffect(() => {
-        if (masterboxId) {
-            const masterbox = masterboxs.find((masterbox) => masterbox.id === masterboxId);
-            setMasterboxData(masterbox);
-            console.log("Masterbox : ", masterbox);
-
-            const order = orders.filter((order) => order.masterboxID === masterboxId);
-            setOrderData(order);
-            console.log("Order : ", order);
-
-            const job = jobs.find((job) => job.id === masterbox.jobID);
-            setJobData(job);
-            console.log("Job : ", job);
-
-            const product = products.find((product) => product.id === job.productID);
-            setProductData(product);
-            console.log("Product : ", product);
-        } else {
-            setMasterboxData(null);
-            setOrderData([]);
-            setJobData([]);
-            setProductData([]);
-        }
-    }, [masterboxId]);
     return (
         <>
             <Link to={"/"}>Back</Link>
             <div className='center'>
-                <h1>Data Demo</h1>
-                <OptionForm variableName='Masterbox' options={masterboxIDs} value={masterboxId} setValue={(e)=>{setMasterboxId(e)}}/>
-                {masterboxData === null ? <></> : <MasterboxDisplay productData={productData} jobData={jobData} masterboxData={masterboxData}/>}
-                {orderData.length === 0 ? <></> : 
-                <><h1>Orders</h1>
-                {orderDisplay}</>
-                }
+                <h1>Reporting</h1>
+                <DateForm variableName='Start Date' value={startDate} setValue={setStartDate}/>
+                <DateForm variableName='End Date' value={endDate} setValue={setEndDate}/>
                 {showModal && <ProductModal productData={productData} setShowModal={setShowModal}/>}
+                <button onClick={()=>{console.log('Generate')}}>Generate</button>
             </div>
-           
         </>
     )
 }

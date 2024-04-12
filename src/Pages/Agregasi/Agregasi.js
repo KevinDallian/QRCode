@@ -1,21 +1,38 @@
 import './Agregasi.css';
 import ActionButton from '../../Components/ActionButton/ActionButton';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {EndModal, JobList, JobModal} from '../Serialisasi/Serialisasi';
 import ReactTable from '../../Components/Table/ReactTable';
 import Modal from '../../Components/Modal/Modal';
 import Barcode from 'react-jsbarcode';
+import { OptionForm } from '../../Components/FormDetail/FormDetail';
+import { findAllByTestId } from '@testing-library/react';
 
-export default function Agregasi({jobs, products, globalOrders, setGlobalOrders, masterboxs, setGlobalMasterbox}){
+export default function Agregasi({jobs, products, globalOrders, setGlobalOrders, globalMasterboxs, setGlobalMasterbox}){
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
     const [showPrintModal, setShowPrintModal] = useState(false);
+
+    const [aggregationQty, setAggregationQty] = useState(0);
+    const [aggregationLvl, setAggregationLvl] = useState(null);
     const [currentJob, setCurrentJob] = useState({});
     const [scannedData, setScannedData] = useState([]);
     const [printData, setPrintData] = useState(null);
-    const [product, setProduct] = useState({});
+    const [product, setProduct] = useState(null);
+
+    useEffect(() => {
+        if (product !== null) {
+            const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
+            setAggregationQty(aggregation.quantity);
+        } 
+    }, [aggregationLvl])
+
+    const getProductAggregationNames = (product) => {
+        if (product.aggregations === undefined) return [];
+        return product.aggregations.map((aggregation) => aggregation.name);
+    }
     
     const loadJob = (index) => {
         const job = jobs[index];
@@ -44,7 +61,6 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
         } else if (modalType === "PrintModal") {
             setShowPrintModal(!showPrintModal);
         }
-        
     }
 
     const formatDate = (date) => {
@@ -57,22 +73,40 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
     }
 
     const scanOrder = () => {
-        const orders = globalOrders.filter((order) => order.jobID === currentJob.id && order.masterboxID === "");
-        if (orders === undefined || orders.length === 0) return;
-        const index = scannedData.length;
-        const order = orders[index];
-        const newData = {
-            orderID : order.id,
-            masterboxID : "",
-            manufactureDate : order.manufactureDate,
-            orderStatus : "Printed"
-        };
-        setScannedData([...scannedData, newData]);
+        const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
+        
+        if (aggregation.level === 1) {
+            const orders = globalOrders.filter((order) => order.jobID === currentJob.id && order.masterboxID === "");
+            if (orders === undefined || orders.length === 0) return;
+            const index = scannedData.length;
+            const order = orders[index];
+            const newData = {
+                orderID : order.id,
+                masterboxID : "",
+                manufactureDate : order.manufactureDate,
+                orderStatus : "Printed"
+            };
+            setScannedData([...scannedData, newData]);
+        } else {
+            const masterboxs = globalMasterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id);
+            if (masterboxs === undefined || masterboxs.length === 0) return;
+            const index = scannedData.length;
+            if (masterboxs[index] == null) return;
+            const masterbox = masterboxs[index];
+            const newData = {
+                orderID : masterbox.id,
+                masterboxID : "",
+                manufactureDate : new Date().toString(),
+                orderStatus : "Printed"
+            };
+            setScannedData([...scannedData, newData]);
+        }
     }
 
     const printMasterBox = () => {
-        const existingDataLength = masterboxs.length + 1;
-        const generatedID = `${product.nie}/${currentJob.batchNo}/MB${(existingDataLength).toString().padStart(3, "0")}`;
+        const existingDataLength = globalMasterboxs.length + 1;
+        const masterboxPrefix = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl).prefix;
+        const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
         const masterbox = {
             id : generatedID,
             productID : currentJob.productID,
@@ -92,12 +126,12 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
         const updatedOrders = globalArrayOrders.map((order) => {
             if (scannedData.find((data) => data.orderID === order.id)){
                 order.masterboxID = generatedID;
-                order.status = "Printed";
+                order.status = "Scanned";
             }
             return order;
         });
         setGlobalOrders(updatedOrders);
-        setGlobalMasterbox([...masterboxs, masterbox]);
+        setGlobalMasterbox([...globalMasterboxs, masterbox]);
         setPrintData(printData);
         toggleModal("PrintModal");
     }
@@ -111,12 +145,14 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             {showPrintModal && <PrintModal data={printData} toggleModal={()=>endPrint()}/>}
             <div className='flex-row job-display'>
                 <div className='col'>
+                    {product !== null && <OptionForm variableName={"Level"} options={getProductAggregationNames(product)} value={aggregationLvl} setValue={setAggregationLvl}/>}
+                    
                     <JobList name={"Job ID"} detail={currentJob.id} />
                     <JobList name={"Produk"} detail={currentJob.productID} />
                     <JobList name={"Batch No"} detail={currentJob.batchNo} />
                 </div>
                 <div className='col'>
-                    <JobList name={"Order Quantity"} detail={product.quantity}/>
+                    <JobList name={"Order Quantity"} detail={aggregationQty}/>
                     <JobList name={"Expired Date"} detail={formatDate(currentJob.expiredDate)}/>
                     <JobList name={"Job Status"} detail={currentJob.jobStatus}/>
                 </div>
@@ -125,8 +161,8 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
                     <ActionButton name={"End Job"} onClickFunction={()=> {toggleModal("EndModal")}} disabled={Object.keys(currentJob).length === 0}/>
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Print"} onClickFunction={()=> {printMasterBox()}} disabled={scannedData.length < product.quantity || Object.keys(currentJob).length === 0}/>
-                    <ActionButton name={"Scan"} onClickFunction={()=> {scanOrder()}} disabled={Object.keys(currentJob).length === 0 || scannedData.length >= product.quantity}/>
+                    <ActionButton name={"Print"} onClickFunction={()=> {printMasterBox()}} disabled={scannedData.length < aggregationQty || Object.keys(currentJob).length === 0}/>
+                    <ActionButton name={"Scan"} onClickFunction={()=> {scanOrder()}} disabled={Object.keys(currentJob).length === 0 || scannedData.length >= aggregationQty}/>
                 </div>
             </div>
 
