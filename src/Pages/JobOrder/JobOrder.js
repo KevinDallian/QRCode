@@ -120,7 +120,7 @@ export default function JobOrder({jobs, setJobs, products}) {
                     {currentProduct !== null && 
                     <>
                         <div style={{fontWeight: 'bold'}}>Product Quantity Estimation : </div>
-                        <div>{quantity} Products</div>
+                        <div>{quantity} Produk</div>
                         {currentProduct.aggregations
                             .sort((a, b) => a.level - b.level)
                             .map((aggregation, index) => {
@@ -132,10 +132,10 @@ export default function JobOrder({jobs, setJobs, products}) {
                                     estimatedQuantity = quantity / aggregation.quantity;
                                 }
                                 return (
-                                    <div key={index}>
+                                    <div style={{marginTop:"5px"}}key={index}>
                                         <div style={{fontWeight: 'bold'}}>Level {aggregation.level} : {aggregation.name}</div>
-                                        <div>Capacity : {aggregation.quantity}</div>
-                                        <div>Quantity : {estimatedQuantity}</div>
+                                        <div>Kapasitas : {aggregation.quantity}</div>
+                                        <div>Kuantitas : {estimatedQuantity} {aggregation.name}</div>
                                     </div>
                                 );
                             })}

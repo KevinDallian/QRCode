@@ -13,17 +13,52 @@ function App() {
   // const [jobs, setJobs] = useState([{id: "J001", productID: "PR001", batchNo: "B001", expiredDate: "12/12/2022", quantity: 100, jobStatus: "Active"}]);
   // const [orders, setOrders] = useState([{id: "O001", jobID: "J001", masterboxID: "M001", manufactureDate: "12/12/2022", status: "Active"}, {id: "O002", jobID: "J001", masterboxID: "M001", manufactureDate: "12/12/2022", status: "Active"}]);
   // const [masterboxs, setMasterbox] = useState([{id: "M001", productID: "PR001", jobID: "J001"}]);
-  const [products, setProducts] = useState([{
-    id: "PR001",
-    name: "Paracetamol",
-    nie: "DKL2321312",
-    het: 25000,
-    storage : "Simpan dalam suhu ruangan",
-    aggregations: [
-      {name: "Box", quantity: 20, prefix:'BX', level: 1},
-      {name: "Palet", quantity: 5, prefix:'PX', level: 2}
-    ]
-  }]);
+  const [products, setProducts] = useState([
+    {
+      id: "PR001",
+      name: "Bundavin",
+      nie: "SD181551741",
+      het: 11300,
+      storage : "Simpan dalam suhu ruangan",
+      aggregations: [
+        {name: "Box", quantity: 10, prefix:'BX', level: 1},
+        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
+      ]
+    },
+    {
+      id: "PR002",
+      name: "Samcobion",
+      nie: "SD171349921",
+      het: 5000,
+      storage : "Simpan dalam suhu ruangan",
+      aggregations: [
+        {name: "Box", quantity: 10, prefix:'BX', level: 1},
+        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
+      ]
+    },
+    {
+      id: "PR003",
+      name: "Horvita G",
+      nie : "SD171550761",
+      het : 11000,
+      storage : "Simpan dalam suhu ruangan",
+      aggregations: [
+        {name: "Box", quantity: 10, prefix:'BX', level: 1},
+        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
+      ]
+    },
+    {
+      id: "PR004",
+      name: "Samcorbex",
+      nie: "SD191553861",
+      het: 11000,
+      storage : "Simpan dalam suhu ruangan",
+      aggregations: [
+        {name: "Box", quantity: 10, prefix:'BX', level: 1},
+        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
+      ]
+    }
+  ]);
   const [jobs, setJobs] = useState([]);
   const [orders, setOrders] = useState([]);
   const [masterboxs, setMasterbox] = useState([]);
