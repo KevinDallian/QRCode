@@ -7,67 +7,11 @@ import JobOrder from './Pages/JobOrder/JobOrder';
 import Agregasi from './Pages/Agregasi/Agregasi';
 import Reporting from './Pages/Reporting/Reporting';
 import { useState } from 'react';
+import { productsMockData, jobsMockData } from './Utilities/MockData';
 
 function App() {
-  // const [products, setProducts] = useState([{id: "PR001", name: "Paracetamol", nie: "123456", het: 25000, quantity: 100, storage: "Simpan dalam suhu ruangan"}]);
-  // const [jobs, setJobs] = useState([{id: "J001", productID: "PR001", batchNo: "B001", expiredDate: "12/12/2022", quantity: 100, jobStatus: "Active"}]);
-  // const [orders, setOrders] = useState([{id: "O001", jobID: "J001", masterboxID: "M001", manufactureDate: "12/12/2022", status: "Active"}, {id: "O002", jobID: "J001", masterboxID: "M001", manufactureDate: "12/12/2022", status: "Active"}]);
-  // const [masterboxs, setMasterbox] = useState([{id: "M001", productID: "PR001", jobID: "J001"}]);
-  const [products, setProducts] = useState([
-    {
-      id: "PR001",
-      name: "Bundavin",
-      nie: "SD181551741",
-      het: 11300,
-      storage : "Simpan dalam suhu ruangan",
-      aggregations: [
-        {name: "Box", quantity: 10, prefix:'BX', level: 1},
-        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
-      ]
-    },
-    {
-      id: "PR002",
-      name: "Samcobion",
-      nie: "SD171349921",
-      het: 5000,
-      storage : "Simpan dalam suhu ruangan",
-      aggregations: [
-        {name: "Box", quantity: 10, prefix:'BX', level: 1},
-        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
-      ]
-    },
-    {
-      id: "PR003",
-      name: "Horvita G",
-      nie : "SD171550761",
-      het : 11000,
-      storage : "Simpan dalam suhu ruangan",
-      aggregations: [
-        {name: "Box", quantity: 10, prefix:'BX', level: 1},
-        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
-      ]
-    },
-    {
-      id: "PR004",
-      name: "Samcorbex",
-      nie: "SD191553861",
-      het: 11000,
-      storage : "Simpan dalam suhu ruangan",
-      aggregations: [
-        {name: "Box", quantity: 10, prefix:'BX', level: 1},
-        {name: "Palet", quantity: 5, prefix:'PX', level: 2}
-      ]
-    }
-  ]);
-  const [jobs, setJobs] = useState([{
-    id : "J001",
-    productID : "PR001",
-    batchNo : "UX123",
-    expiredDate : new Date(),
-    topAggregationQty : 1,
-    productQty: 50,
-    jobStatus : "Active"
-  }]);
+  const [products, setProducts] = useState([...productsMockData]);
+  const [jobs, setJobs] = useState([...jobsMockData]);
   const [orders, setOrders] = useState([]);
   const [masterboxs, setMasterbox] = useState([]);
 
