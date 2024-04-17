@@ -59,7 +59,15 @@ function App() {
       ]
     }
   ]);
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState([{
+    id : "J001",
+    productID : "PR001",
+    batchNo : "UX123",
+    expiredDate : new Date(),
+    topAggregationQty : 1,
+    productQty: 50,
+    jobStatus : "Active"
+  }]);
   const [orders, setOrders] = useState([]);
   const [masterboxs, setMasterbox] = useState([]);
 
@@ -71,8 +79,8 @@ function App() {
               <Route index element={<Home />}></Route>
               <Route path='registrasi' element={<Registrasi products={products} setProducts={setProducts}/>}/>
               <Route path='jobOrder' element={<JobOrder jobs={jobs} setJobs={setJobs} products={products}/>}/>
-              <Route path='serialisasi' element={<Serialisasi jobs={jobs} products={products} globalOrders={orders} setGlobalOrders={setOrders}/>} />
-              <Route path='agregasi' element={<Agregasi jobs={jobs} products={products} globalOrders={orders} setGlobalOrders={setOrders} globalMasterboxs={masterboxs} setGlobalMasterbox={setMasterbox}/>}/>
+              <Route path='serialisasi' element={<Serialisasi jobs={jobs} setJobs={setJobs} products={products} globalOrders={orders} setGlobalOrders={setOrders}/>} />
+              <Route path='agregasi' element={<Agregasi jobs={jobs} setJobs={setJobs} products={products} globalOrders={orders} setGlobalOrders={setOrders} globalMasterboxs={masterboxs} setGlobalMasterbox={setMasterbox}/>}/>
               <Route path='reporting' element={<Reporting jobs={jobs} products={products} orders={orders} masterboxs={masterboxs}/>}/>
               <Route path='*'>404 Not Found</Route>
             </Route>

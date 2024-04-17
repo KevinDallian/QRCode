@@ -7,9 +7,8 @@ import ReactTable from '../../Components/Table/ReactTable';
 import Modal from '../../Components/Modal/Modal';
 import Barcode from 'react-jsbarcode';
 import { OptionForm } from '../../Components/FormDetail/FormDetail';
-import { findAllByTestId } from '@testing-library/react';
 
-export default function Agregasi({jobs, products, globalOrders, setGlobalOrders, globalMasterboxs, setGlobalMasterbox}){
+export default function Agregasi({jobs, setJobs, products, globalOrders, setGlobalOrders, globalMasterboxs, setGlobalMasterbox}){
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
@@ -28,6 +27,14 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             setAggregationQty(aggregation.quantity);
         } 
     }, [aggregationLvl])
+
+    useEffect(() => {
+        if (currentJob !== null) {
+            if (aggregationQty > 0 && scannedData.length >= aggregationQty) {
+                printMasterBox();
+            }
+        }
+    }, [scannedData])
 
     const getProductAggregationNames = (product) => {
         if (product.aggregations === undefined) return [];
@@ -87,7 +94,8 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             };
             setScannedData([...scannedData, newData]);
         } else {
-            const masterboxs = globalMasterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id && masterbox.masterboxID === undefined);
+            const masterboxPrefix = aggregation.prefix;
+            const masterboxs = globalMasterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id && !masterbox.id.includes(masterboxPrefix) &&masterbox.masterboxID === undefined);
             if (masterboxs === undefined || masterboxs.length === 0) return;
             const index = scannedData.length;
             if (masterboxs[index] == null) return;
@@ -103,7 +111,8 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
     }
 
     const printMasterBox = () => {
-        const masterboxPrefix = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl).prefix;
+        const productAggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
+        const masterboxPrefix = productAggregation.prefix;
         const existingDataLength = globalMasterboxs.filter((masterbox) => masterbox.id.includes(masterboxPrefix)).length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
         const masterbox = {
@@ -116,7 +125,7 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
             productName : product.name,
             nie : product.nie,
             expiredDate : formatDate(currentJob.expiredDate),
-            quantity : product.quantity,
+            quantity : productAggregation.quantity,
             storage : product.storage,
             manufacturer : "PT Samco Indonesia",
             batchNo : currentJob.batchNo,
@@ -174,7 +183,7 @@ export default function Agregasi({jobs, products, globalOrders, setGlobalOrders,
                     <ActionButton name={"End Job"} onClickFunction={()=> {toggleModal("EndModal")}} disabled={Object.keys(currentJob).length === 0}/>
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Print"} onClickFunction={()=> {printMasterBox()}} disabled={scannedData.length < aggregationQty || Object.keys(currentJob).length === 0}/>
+                    <ActionButton name={"Print"} onClickFunction={()=> {printMasterBox()}} disabled={scannedData.length <= 0||Object.keys(currentJob).length === 0}/>
                     <ActionButton name={"Scan"} onClickFunction={()=> {scanOrder()}} disabled={Object.keys(currentJob).length === 0 || scannedData.length >= aggregationQty}/>
                 </div>
             </div>

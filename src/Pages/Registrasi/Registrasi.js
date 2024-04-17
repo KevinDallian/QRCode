@@ -76,6 +76,15 @@ export default function Registrasi({products, setProducts}){
         setFormData(selectedData);
     }
 
+    function setFormData(data){
+        setName(data.name);
+        setNIE(data.nie);
+        setHET(data.het);
+        setStorage(data.storage);
+        setAggregationLvl(data.aggregations.length);
+        setAggregations(data.aggregations);
+    }
+
     function saveData() {
         if (currentIndex !== null) {
             const updatedData = {
@@ -119,16 +128,7 @@ export default function Registrasi({products, setProducts}){
         setAggregations([]);
         setAggregationLvl(0);
     }
-    
-    function setFormData(data){
-        setName(data.name);
-        setNIE(data.nie);
-        setHET(data.het);
-        setStorage(data.storage);
-        setAggregationLvl(data.aggregations.length);
-        setAggregations(data.aggregations);
-    }
-    
+
     return (
         <>
             <Link to="/">Back</Link>

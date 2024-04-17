@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Modal from '../../Components/Modal/Modal';
 import QRCode from 'react-qr-code';
 
-export default function Serialisasi({jobs, products, globalOrders, setGlobalOrders}){
+export default function Serialisasi({jobs, setJobs, products, globalOrders, setGlobalOrders}){
     const headers = ['No', 'Order ID', 'Job ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
     const [showJobModal, setShowJobModal] = useState(false);
     const [showEndModal, setShowEndModal] = useState(false);
@@ -46,6 +46,14 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
 
     const endPrint = () => {
         setOrders([]);
+        const updatedJobs = jobs.map((job) => {
+            if (job.id === currentJob.id) {
+                job.jobStatus = "Serialized";
+                return job;
+            }
+            return job;
+        });
+        setJobs(updatedJobs);
         toggleModal("PrintModal");
     }
 
@@ -58,11 +66,29 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
         }
     }
 
+    const printData = () => {
+        const ordersTobePrinted = orders.map((order) => {
+            order.status = "Printed";
+            return order;
+        });
+        setOrders(ordersTobePrinted);
+        const globalOrdersUpdated = globalOrders.map((globalOrder) => {
+            const order = ordersTobePrinted.find((order) => order.id === globalOrder.id);
+            if (order) {
+                return order;
+            } else {
+                return globalOrder;
+            }
+        });
+        setGlobalOrders(globalOrdersUpdated);
+        toggleModal("PrintModal");
+    }
+
     const generateData = (job, product) => {
         let generatedData = [];
         for (let i=0;i<job.productQty;i++) {
             const existingDataLength = generatedData.length;
-            const generatedID = `(90)${product.nie}(91)${job.expiredDate}(00)${job.batchNo}(01)${(existingDataLength+1).toString().padStart(3, "0")}`;
+            const generatedID = `(90)${product.nie}(91)${formatDate(job.expiredDate)}(00)${job.batchNo}(01)${(existingDataLength+1).toString().padStart(3, "0")}`;
             const newData = {
                 id : generatedID,
                 jobID : job.id,
@@ -81,7 +107,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
             {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs}/>}
             <Link to='/'>Back</Link>
             {showEndModal && <EndModal toggleModal={()=>toggleModal("EndModal")} endJob={endJob}/>}
-            {showPrintModal && <PrintModal data={orders} toggleModal={()=>endPrint()} job={currentJob}/>}
+            {showPrintModal && <PrintModal data={orders} toggleModal={()=>endPrint()} job={currentJob} product={products.find((product) => product.id === currentJob.productID)}/>}
             <h1 className='title'>Serialisasi</h1>
             <div className='flex-row job-display'>
                 <div className='col'>
@@ -99,7 +125,7 @@ export default function Serialisasi({jobs, products, globalOrders, setGlobalOrde
                     <ActionButton name={"End Job"} onClickFunction={()=> {toggleModal("EndModal")}} disabled={Object.keys(currentJob).length === 0}/>
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Print"} onClickFunction={()=> {toggleModal("PrintModal")}}/>
+                    <ActionButton name={"Print"} onClickFunction={printData}/>
                     <ActionButton name={"Test Print"} onClickFunction={()=> {console.log("Test Print")}}/>
                     <ActionButton name={"Stop Print"} onClickFunction={()=> {console.log("Stop Print")}}/>
                 </div>
@@ -168,7 +194,7 @@ export function EndModal({toggleModal, endJob}){
     );
 }
 
-function PrintModal({data, toggleModal, job}) {
+function PrintModal({data, toggleModal, job, product}) {
     const formatDate = (date) => {
         if (!date) return "";
         if (date instanceof Date) {
@@ -197,7 +223,7 @@ function PrintModal({data, toggleModal, job}) {
                         </tr>
                         <tr>
                             <th>HET</th>
-                            <td>{250000}</td>
+                            <td>{product.het}</td>
                         </tr>
                     </tbody>
                 </table>
