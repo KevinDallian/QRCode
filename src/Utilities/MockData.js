@@ -54,5 +54,14 @@ export const jobsMockData = [
         topAggregationQty : 1,
         productQty: 50,
         jobStatus : "Active"
+    },
+    {
+        id : "J002",
+        productID : "PR002",
+        batchNo : "UX456",
+        expiredDate : new Date(),
+        topAggregationQty : 2,
+        productQty: 100,
+        jobStatus : "Active"
     }
 ];
