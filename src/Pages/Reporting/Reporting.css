@@ -31,3 +31,13 @@
 .dashboard-cards {
     margin-left: 4vw;
 }
+
+.dashboard-chart {
+    height: 50vh;
+    width: 50vw;
+}
+
+.dashboard-chart-container {
+    margin-top: 4vh;
+    margin-left: 4vw;
+}

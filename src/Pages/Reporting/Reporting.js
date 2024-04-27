@@ -1,8 +1,12 @@
 import DashboardCard from '../../Components/Dashboard/DashboardCard';
 import './Reporting.css';
 import { Link } from 'react-router-dom';
+import LineChart from '../../Components/Dashboard/LineChart/LineChart';
+import { OptionForm } from '../../Components/FormDetail/FormDetail';
+import { useState } from 'react';
 
 export default function Reporting({jobs, products, orders, masterboxs}){
+    const [selectedProduct, setSelectedProduct] = useState('');
 
     function formatDate(date) {
         if (!date) return "";
@@ -21,6 +25,18 @@ export default function Reporting({jobs, products, orders, masterboxs}){
                 <DashboardCard text={"Masterbox dicetak hari ini"} value={200} subtitles={"-3% dari kemarin"}/>
                 <DashboardCard text={"Order pending hari ini"} value={products.length} subtitles={""}/>
             </div>
+            <div className='dashboard-chart-container'>
+                <div className='flex-row'>
+                    <OptionForm variableName={'Produk'} options={products.map((product)=>product.name)} value={selectedProduct} setValue={setSelectedProduct}/>
+                </div>
+                { selectedProduct && 
+                <div className='dashboard-chart'>
+                    <LineChart productName={selectedProduct}/>
+                </div>}
+                
+            </div>
+            
+            
         </>
     )
 }
