@@ -27,3 +27,7 @@
 .qr-btn:hover {
     cursor: pointer;
 }
+
+.dashboard-cards {
+    margin-left: 4vw;
+}
