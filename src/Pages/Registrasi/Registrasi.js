@@ -73,7 +73,16 @@ export default function Registrasi({products, setProducts}){
         setCurrentIndex(index);
         
         const selectedData = products[index];
-        setFormData(selectedData)
+        setFormData(selectedData);
+    }
+
+    function setFormData(data){
+        setName(data.name);
+        setNIE(data.nie);
+        setHET(data.het);
+        setStorage(data.storage);
+        setAggregationLvl(data.aggregations.length);
+        setAggregations(data.aggregations);
     }
 
     function saveData() {
@@ -119,16 +128,7 @@ export default function Registrasi({products, setProducts}){
         setAggregations([]);
         setAggregationLvl(0);
     }
-    
-    function setFormData(data){
-        setName(data.name);
-        setNIE(data.nie);
-        setHET(data.het);
-        setStorage(data.storage);
-        setAggregationLvl(data.aggregations.length);
-        setAggregations(data.aggregations);
-    }
-    
+
     return (
         <>
             <Link to="/">Back</Link>
@@ -141,7 +141,7 @@ export default function Registrasi({products, setProducts}){
                     <FormDetail variableName={"Storage"} value={storage} setValue={(e)=>setStorage(e)}/>
                 </form>
                 <div>
-                    <OptionForm variableName={"Aggregation Level"} options={[1, 2, 3]} value={aggregationLvl} setValue={setAggregationLvl} hasDefaultValue={false}/>
+                    <OptionForm variableName={"Level Agregasi"} options={[1, 2, 3]} value={aggregationLvl} setValue={setAggregationLvl} hasDefaultValue={false}/>
                     <DynamicForm aggregations={aggregations} onFormDataChange={onAggregationFormChange}/>
                 </div>
                 <div id='twoBtn' className='flex-column'>
