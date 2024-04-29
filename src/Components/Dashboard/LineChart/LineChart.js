@@ -59,3 +59,4 @@ export default function LineChart({productName}) {
     
     return <Line data={data} options={options} />;
   };
+

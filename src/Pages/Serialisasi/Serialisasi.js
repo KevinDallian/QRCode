@@ -13,12 +13,12 @@ export default function Serialisasi({jobs, setJobs, products, globalOrders, setG
     const [currentJob, setCurrentJob] = useState({});
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [orders, setOrders] = useState([]);
+    const [ordersDisplay, setOrdersDisplay] = useState([]);
 
     const loadJob = (index) => {
         const job = jobs[index];
         const product = products.find((product) => product.id === job.productID);
         setCurrentJob(job);
-        console.log(job);
         if (globalOrders.some((order) => order.jobID === job.id)) {
             const orders = globalOrders.filter((order) => order.jobID === job.id);
             setOrders(orders);
@@ -69,9 +69,19 @@ export default function Serialisasi({jobs, setJobs, products, globalOrders, setG
     const printData = () => {
         const ordersTobePrinted = orders.map((order) => {
             order.status = "Printed";
+            order.printDate = new Date().toLocaleDateString();
             return order;
         });
         setOrders(ordersTobePrinted);
+        setOrdersDisplay(ordersTobePrinted.map((data, index) => {
+            return {
+                id : data.id,
+                jobID : data.jobID,
+                masterboxID : data.masterboxID,
+                manufactureDate : data.manufactureDate,
+                status : data.status,
+            }
+        }));
         const globalOrdersUpdated = globalOrders.map((globalOrder) => {
             const order = ordersTobePrinted.find((order) => order.id === globalOrder.id);
             if (order) {
@@ -94,17 +104,26 @@ export default function Serialisasi({jobs, setJobs, products, globalOrders, setG
                 jobID : job.id,
                 masterboxID : "",
                 manufactureDate : new Date().toString(),
-                status : "Not Printed"
+                status : "Not Printed",
             };
             generatedData.push(newData);
         }
         setOrders(generatedData);
+        setOrdersDisplay(generatedData.map((data, index) => {
+            return {
+                id : data.id,
+                jobID : data.jobID,
+                masterboxID : data.masterboxID,
+                manufactureDate : data.manufactureDate,
+                status : data.status,
+            }    
+        }));
         setGlobalOrders([...globalOrders, ...generatedData]);
     }
 
     return (
         <>
-            {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs}/>}
+            {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs.filter((job) => job.jobStatus === "Active")}/>}
             <Link to='/'>Back</Link>
             {showEndModal && <EndModal toggleModal={()=>toggleModal("EndModal")} endJob={endJob}/>}
             {showPrintModal && <PrintModal data={orders} toggleModal={()=>endPrint()} job={currentJob} product={products.find((product) => product.id === currentJob.productID)}/>}
@@ -137,7 +156,7 @@ export default function Serialisasi({jobs, setJobs, products, globalOrders, setG
                 <p>Cancelled        :</p>
             </div>
             <div id='table-serialisasi'>
-                <ReactTable headers={headers} datas={orders} onClickHandler={(e)=>{console.log(e)}}/>
+                <ReactTable headers={headers} datas={ordersDisplay} onClickHandler={(e)=>{console.log(e)}}/>
             </div>
         </>
     );
@@ -155,6 +174,17 @@ export function JobList({name, detail}) {
 export function JobModal({toggleModal, loadJob, jobs}) {
     const [currentIndex, setCurrentIndex] = useState(null);
     const modalHeaders = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Top Aggregation Quantity", "Order Quantity", "Job Status"];
+    const jobDisplay = jobs.map((job, index) => {
+        return {
+            id : job.id,
+            productID : job.productID,
+            batchNo : job.batchNo,
+            expiredDate : job.expiredDate,
+            topAggregationQty : job.topAggregationQty,
+            productQty: job.productQty,
+            jobStatus : job.jobStatus,
+        }
+    });
 
     const onClickTableModal = (index) => {
         setCurrentIndex(index);
@@ -175,7 +205,7 @@ export function JobModal({toggleModal, loadJob, jobs}) {
                 </div>
             </div>
             <div className=''>
-                <ReactTable headers={modalHeaders} datas={jobs} currentIndex={currentIndex} onClickHandler={onClickTableModal}/>
+                <ReactTable headers={modalHeaders} datas={jobDisplay} currentIndex={currentIndex} onClickHandler={onClickTableModal}/>
             </div>
         </Modal>
     );

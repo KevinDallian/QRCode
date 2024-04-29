@@ -89,8 +89,8 @@ export default function Agregasi({jobs, setJobs, products, globalOrders, setGlob
             const newData = {
                 orderID : order.id,
                 masterboxID : order.masterboxID,
-                manufactureDate : order.manufactureDate,
-                orderStatus : "Printed"
+                printDate : order.printDate,
+                orderStatus : order.status
             };
             setScannedData([...scannedData, newData]);
         } else {
@@ -104,7 +104,7 @@ export default function Agregasi({jobs, setJobs, products, globalOrders, setGlob
                 orderID : masterbox.id,
                 masterboxID : masterbox.masterboxID || '',
                 manufactureDate : new Date().toString(),
-                orderStatus : "Printed"
+                orderStatus : masterbox.status
             };
             setScannedData([...scannedData, newData]);
         }
@@ -118,14 +118,15 @@ export default function Agregasi({jobs, setJobs, products, globalOrders, setGlob
         const masterbox = {
             id : generatedID,
             productID : currentJob.productID,
-            jobID : currentJob.id
+            jobID : currentJob.id,
+            printDate : new Date().toLocaleDateString(),
         }
         const printData = {
             id : generatedID,
             productName : product.name,
             nie : product.nie,
             expiredDate : formatDate(currentJob.expiredDate),
-            quantity : productAggregation.quantity,
+            quantity : scannedData.length,
             storage : product.storage,
             manufacturer : "PT Samco Indonesia",
             batchNo : currentJob.batchNo,
@@ -162,7 +163,7 @@ export default function Agregasi({jobs, setJobs, products, globalOrders, setGlob
         <>
             <Link to='/'>Back</Link>
             <h1 className='title'>Agregasi</h1>
-            {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs}/>}
+            {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobs.filter((job) => job.jobStatus === "Serialized")}/>}
             {showEndModal && <EndModal toggleModal={()=>toggleModal("EndModal")} endJob={endJob}/>}
             {showPrintModal && <PrintModal data={printData} toggleModal={()=>endPrint()}/>}
             <div className='flex-row job-display'>

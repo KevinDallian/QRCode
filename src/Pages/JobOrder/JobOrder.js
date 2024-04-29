@@ -15,6 +15,17 @@ export default function JobOrder({jobs, setJobs, products}) {
     const productsID = products.map((product) => `${product.id}`);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(null);
+    const [jobDisplay, setJobDisplay] = useState(jobs.map((job) => {
+        return {
+            id : job.id,
+            productID : job.productID,
+            batchNo : job.batchNo,
+            expiredDate : job.expiredDate,
+            topAggregationQty : job.topAggregationQty,
+            productQty: job.productQty,
+            jobStatus : job.jobStatus,
+        }        
+    }));
 
     const header = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Top Aggregation Quantity", "Order Quantity", "Job Status"];
 
@@ -71,9 +82,21 @@ export default function JobOrder({jobs, setJobs, products}) {
                 expiredDate : expiredDate,
                 topAggregationQty : topQuantity,
                 productQty: quantity,
-                jobStatus : jobStatus
+                jobStatus : jobStatus,
+                dateCreated : new Date().toLocaleDateString(),
             };
+            const displayData = {
+                id : generatedID,
+                productID : productID,
+                batchNo : batchNo,
+                expiredDate : expiredDate,
+                topAggregationQty : topQuantity,
+                productQty: quantity,
+                jobStatus : jobStatus,
+            };
+            
             setJobs([...jobs, newData]);
+            setJobDisplay([...jobDisplay, displayData]);
         }
     }
 
@@ -152,7 +175,7 @@ export default function JobOrder({jobs, setJobs, products}) {
             </div>
 
             <div id='table'>
-                <ReactTable headers={header} datas={jobs} currentIndex={null} onClickHandler={onClickRow}/>
+                <ReactTable headers={header} datas={jobDisplay} currentIndex={null} onClickHandler={onClickRow}/>
             </div>
         </>
     );
