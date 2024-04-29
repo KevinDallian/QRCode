@@ -5,6 +5,7 @@ import ReactTable from '../../Components/Table/ReactTable';
 import { Link } from 'react-router-dom';
 import { FormDetail, OptionForm } from '../../Components/FormDetail/FormDetail';
 import DynamicForm from '../../Components/DynamicForm/DynamicForm';
+import useFetch from '../../Hooks/Api';
 
 export default function Registrasi({products, setProducts}){
     const [name, setName] = useState('');
@@ -24,6 +25,7 @@ export default function Registrasi({products, setProducts}){
             aggregation: product.aggregations.length
         }
     }));
+    const {productData, loading, error} = useFetch('https://localhost:3001/api/products');
     
     const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Storage", "Aggregation Level"];
 
