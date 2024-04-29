@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import LineChart from '../../Components/Dashboard/LineChart/LineChart';
 import { OptionForm } from '../../Components/FormDetail/FormDetail';
 import { useState, useEffect } from 'react';
+import ReportingController from './ReportingController';
 
 export default function Reporting({jobs, products, orders, masterboxs}){
     const [currentProduct, setCurrentProduct] = useState('');
     const [selectedProduct, setSelectedProduct] = useState('');
-    
+    const reportingController = new ReportingController();
     useEffect(() => {
         selectProduct(selectedProduct);
     }, [selectedProduct]);
@@ -44,8 +45,8 @@ export default function Reporting({jobs, products, orders, masterboxs}){
             <Link to={"/"}>Back</Link>
             <div className='title'><h1>Dashboard</h1></div>
             <div className='dashboard-cards flex-row'>
-                <DashboardCard text={"Order dicetak hari ini"} value={2500} subtitles={"+2% dari kemarin"}/>
-                <DashboardCard text={"Masterbox dicetak hari ini"} value={142} subtitles={"-3% dari kemarin"}/>
+                <DashboardCard text={"Order dicetak hari ini"} value={reportingController.calculateOrderPrintedToday(orders)} subtitles={"+2% dari kemarin"}/>
+                <DashboardCard text={"Masterbox dicetak hari ini"} value={reportingController.calculateMasterboxPrintedToday(masterboxs)} subtitles={"-3% dari kemarin"}/>
                 <DashboardCard text={"Order pending hari ini"} value={50} subtitles={""}/>
             </div>
             <div className='dashboard-chart-container'>
