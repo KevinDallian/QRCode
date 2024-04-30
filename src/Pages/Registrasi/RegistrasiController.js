@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useFetch, updateProduct, insertProduct, deleteProduct } from '../../Hooks/Api';
+import { updateProduct, insertProduct, deleteProduct } from '../../Utilities/API/Api';
+import useFetch from '../../Utilities/API/UseFetch';
 import APICalls from '../../Utilities/API/APICalls';
 import Product from '../../Models/Product';
 import Aggregation from '../../Models/Aggregations';
