@@ -6,17 +6,18 @@ function useFetch(url) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch(url)
-            .then((response) => response.json())
+        fetch(url, {method: 'GET'})
+            .then((response) => {
+                return response.json();
+            })
             .then((data) => {
                 setData(data);
                 setLoading(false);
             })
             .catch((error) => {
-                console.log(error);
                 setError(error);
                 setLoading(false);
-            });
+            }); 
     }, [url]);
 
     return {data, loading, error};
