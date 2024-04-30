@@ -7,6 +7,16 @@ class Product {
         this.storage = storage;
         this.aggregations = aggregations;
     }
+
+    toJSON(){
+        return {
+            product_id: this.id,
+            name: this.name,
+            nie: this.nie,
+            het: this.het,
+            storage_condition: this.storage
+        };
+    }
 }
 
 export default Product;

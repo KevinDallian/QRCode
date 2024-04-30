@@ -7,6 +7,17 @@ class Aggregation {
         this.prefix = prefix;
         this.level = level;
     }
+
+    toJSON(){
+        return {
+            id: this.id,
+            product_id: this.productId,
+            name: this.name,
+            child_quantity: this.quantity,
+            package_code: this.prefix,
+            level: this.level
+        };
+    }
 }
 
 export default Aggregation

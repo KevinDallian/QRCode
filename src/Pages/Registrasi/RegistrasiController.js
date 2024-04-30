@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import useFetch from '../../Hooks/Api';
-import APICalls from '../../Utilities/APICalls';
+import { useFetch, updateProduct, insertProduct, deleteProduct } from '../../Hooks/Api';
+import APICalls from '../../Utilities/API/APICalls';
 import Product from '../../Models/Product';
 import Aggregation from '../../Models/Aggregations';
 
@@ -86,39 +86,83 @@ function RegistrasiController() {
     }
 
     function saveData() {
-        const updatedData = {
-            id: currentIndex !== null ? currentProducts[currentIndex].id : `PR${(currentProducts.length + 1).toString().padStart(3, "0")}`,
+        const updatedProduct = new Product(
+            currentIndex !== null ? currentProducts[currentIndex].id : `PR${(currentProducts.length + 1).toString().padStart(3, "0")}`,
             name,
             nie,
             het,
             storage,
             aggregations
-        };
+        );
 
-        const updatedProducts = currentIndex !== null ?
-            [...currentProducts.slice(0, currentIndex), updatedData, ...currentProducts.slice(currentIndex + 1)] :
-            [...currentProducts, updatedData];
+        const handleSuccess = (updatedProducts) => {
+            const updatedDisplayProducts = updatedProducts.map(product => ({
+                id: product.id,
+                name: product.name,
+                nie: product.nie,
+                het: product.het,
+                storage: product.storage,
+                aggregationLvl: product.aggregations.length
+            }));
+            
+            setCurrentProducts(updatedProducts);
+            setDisplayProducts(updatedDisplayProducts);
+        }
 
-        const updatedDisplayProducts = updatedProducts.map(product => ({
-            id: product.id,
-            name: product.name,
-            nie: product.nie,
-            het: product.het,
-            storage: product.storage,
-            aggregationLvl: product.aggregations.length
-        }));
-
-        setCurrentProducts(updatedProducts);
-        setDisplayProducts(updatedDisplayProducts);
+        if (currentIndex !== null) {
+            updateProduct(currentProducts[currentIndex].id, updatedProduct)
+                .then((response) => {
+                    if (response.status === 200) {
+                        handleSuccess([
+                            ...currentProducts.slice(0, currentIndex),
+                            updatedProduct,
+                            ...currentProducts.slice(currentIndex + 1)
+                        ]);
+                        alert('Produk Update Berhasil!');
+                    }
+                    else {
+                        alert(`Produk Update Gagal! ${response.error}`);
+                    }
+                });
+        } else {
+            insertProduct(updatedProduct)
+                .then((response) => {
+                    if (response.status === 200) {
+                        handleSuccess([...currentProducts, updatedProduct]);
+                        alert('Produk Insert Berhasil!');
+                    } else {
+                        alert(`Produk Insert Gagal! ${response.error}`)
+                    }
+                });
+        }
     }
 
-    function deleteData(){
-        const newData = [...currentProducts.slice(0, currentIndex), ...currentProducts.slice(currentIndex+1)];
-        const newDisplayData = [...displayProducts.slice(0, currentIndex), ...displayProducts.slice(currentIndex+1)];
-        setCurrentProducts(newData);
-        setDisplayProducts(newDisplayData);
-        setCurrentIndex(null);
-        clearData();
+    function deleteData() {
+        if (currentIndex !== null) {
+            const updatedProducts = currentProducts.filter((_, index) => index !== currentIndex);
+            const updatedDisplayProducts = updatedProducts.map(product => ({
+                id: product.id,
+                name: product.name,
+                nie: product.nie,
+                het: product.het,
+                storage: product.storage,
+                aggregationLvl: product.aggregations.length
+            }));
+
+            deleteProduct(currentProducts[currentIndex].id)
+                .then((response) => {
+                    console.log(response);
+                    if (response.status === 200) {
+                        alert('Produk Berhasil Dihapus!');
+                        setCurrentProducts(updatedProducts);
+                        setDisplayProducts(updatedDisplayProducts);
+                        setCurrentIndex(null);
+                        clearData();
+                    } else {
+                        alert(`Produk Gagal Dihapus! ${response.error}`);
+                    }
+                })
+        }
     }
 
     function clearData(){
