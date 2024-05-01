@@ -20,15 +20,13 @@ function RegistrasiController() {
     const aggregationAPI = AggregationAPI();
 
     useEffect(() => {
-        if (productAPI.productData, aggregationAPI.aggregationsData) {
+        if (productAPI.productData && aggregationAPI.aggregationsData) {
             const productData = productAPI.productData;
             const aggregationsData = aggregationAPI.aggregationsData;
             
             const updatedAggregations = aggregationsData.map((aggregation) => {
                 return new Aggregation(aggregation.id, aggregation.product_id, aggregation.name, aggregation.child_quantity, aggregation.package_code, aggregation.level, aggregation.het);
             });
-
-            console.log(updatedAggregations);
             
             const updatedProducts = productData.map((product) => {
                 return new Product(product.product_id, product.name, product.nie, product.het, product.storage_condition, updatedAggregations.filter((aggregation) => aggregation.productId === product.product_id));
@@ -67,6 +65,14 @@ function RegistrasiController() {
     
     const setAggregationForm = (quantity) => {
         const newFields = Array.from({ length: quantity }, (_, i) => ({ name: '', quantity: 0, prefix: '', het: 0, level: i + 1 }));
+        const existingAggregation = currentProducts[currentIndex]?.aggregations;
+        if (existingAggregation) {
+            newFields.forEach((field, index) => {
+                if (existingAggregation[index]) {
+                    Object.assign(field, existingAggregation[index]);
+                }
+            });
+        }
         setAggregations(newFields);
     }
 
@@ -131,7 +137,7 @@ function RegistrasiController() {
                     aggregationAPI.deleteAggregations(aggregation.id);
                 });
             }
-            
+
             const updatedDisplayProducts = updatedProducts.map(product => ({
                 id: product.id,
                 name: product.name,
