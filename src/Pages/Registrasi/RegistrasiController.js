@@ -122,88 +122,48 @@ function RegistrasiController() {
         });
 
         const handleSuccess = (updatedProducts) => {
-            const updatedDisplayProducts = updatedProducts.map(product => ({
-                id: product.id,
-                name: product.name,
-                nie: product.nie,
-                het: product.het,
-                storage: product.storage,
-                aggregationLvl: product.aggregations.length
-            }));
-            
-            setCurrentProducts(updatedProducts);
-            setDisplayProducts(updatedDisplayProducts);
+           return () => {
+                const updatedDisplayProducts = updatedProducts.map(product => ({
+                    id: product.id,
+                    name: product.name,
+                    nie: product.nie,
+                    het: product.het,
+                    storage: product.storage,
+                    aggregationLvl: product.aggregations.length
+                }));
+                
+                setCurrentProducts(updatedProducts);
+                setDisplayProducts(updatedDisplayProducts);
+           }
         }
 
         if (currentIndex !== null) {
-            productAPI.updateProduct(currentProducts[currentIndex].id, updatedProduct.toJSON())
-                .then((response) => {
-                    if (response.status === 200) {
-                        handleSuccess([
-                            ...currentProducts.slice(0, currentIndex),
-                            updatedProduct,
-                            ...currentProducts.slice(currentIndex + 1)
-                        ]);
-                        alert('Produk Update Berhasil!');
-                    }
-                    else {
-                        alert(`Produk Update Gagal! ${response.error}`);
-                    }
-                });
-            updatedAggregations.forEach((aggregation) => {
-                if (aggregation.id !== null) {
-                    aggregationAPI.updateData(aggregation.id, aggregation.toJSON())
-                        .then((response) => {
-                            if (response.status !== 200) {
-                                alert(`Aggregasi Update Gagal! ${response.error}`);
-                            }
-                        });
-                } else {
-                    aggregationAPI.insertData(aggregation.toJSON())
-                        .then((response) => {
-                            if (response.status !== 200) {
-                                alert(`Aggregasi Insert Gagal! ${response.error}`);
-                            }
-                        });
-                }
-            });
+            productAPI.updateProduct(currentProducts[currentIndex].id, updatedProduct.toJSON(), handleSuccess([...currentProducts.slice(0, currentIndex), updatedProduct, ...currentProducts.slice(currentIndex + 1)]));
         } else {
-            productAPI.insertProduct(updatedProduct)
-                .then((response) => {
-                    if (response.status === 200) {
-                        handleSuccess([...currentProducts, updatedProduct]);
-                        alert('Produk Insert Berhasil!');
-                    } else {
-                        alert(`Produk Insert Gagal! ${response.error}`)
-                    }
-                });
+            productAPI.insertProduct(updatedProduct, handleSuccess([...currentProducts, updatedProduct]));
         }
     }
 
     function deleteData() {
         if (currentIndex !== null) {
             const updatedProducts = currentProducts.filter((_, index) => index !== currentIndex);
-            const updatedDisplayProducts = updatedProducts.map(product => ({
-                id: product.id,
-                name: product.name,
-                nie: product.nie,
-                het: product.het,
-                storage: product.storage,
-                aggregationLvl: product.aggregations.length
-            }));
-
-            productAPI.deleteProduct(currentProducts[currentIndex].id)
-                .then((response) => {
-                    if (response.status === 200) {
-                        alert('Produk Berhasil Dihapus!');
-                        setCurrentProducts(updatedProducts);
-                        setDisplayProducts(updatedDisplayProducts);
-                        setCurrentIndex(null);
-                        clearData();
-                    } else {
-                        alert(`Produk Gagal Dihapus! ${response.error}`);
-                    }
-                })
+            const handleSuccess = (updatedProducts) => {
+                return () => {
+                    const updatedDisplayProducts = updatedProducts.map(product => ({
+                        id: product.id,
+                        name: product.name,
+                        nie: product.nie,
+                        het: product.het,
+                        storage: product.storage,
+                        aggregationLvl: product.aggregations.length || 0
+                    }));
+                    setCurrentProducts(updatedProducts);
+                    setDisplayProducts(updatedDisplayProducts);
+                    setCurrentIndex(null);
+                    clearData();
+                }
+            }
+            productAPI.deleteProduct(currentProducts[currentIndex].id, handleSuccess(updatedProducts));
         }
     }
 

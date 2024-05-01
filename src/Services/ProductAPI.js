@@ -17,10 +17,11 @@ function ProductAPI() {
             });
     }, []);
 
-    async function updateProduct(id, updatedData) {
+    async function updateProduct(id, updatedData, completion) {
         apiService.updateData(id, updatedData)
         .then((response) => {
             if (response.status === 200) {
+                completion();
                 alert('Data produk berhasil diupdate!');
             } else {
                 alert(`Gagal mengupdate data produk! ${response.error}`);
@@ -28,10 +29,11 @@ function ProductAPI() {
         });
     }
 
-    async function insertProduct(data) {
+    async function insertProduct(data, completion) {
         apiService.insertData(data)
         .then((response) => {
             if (response.status === 200) {
+                completion();
                 alert('Data produk berhasil ditambahkan!');
             } else {
                 alert(`Gagal menambahkan data produk! ${response.error}`);
@@ -39,10 +41,11 @@ function ProductAPI() {
         });
     }
 
-    async function deleteProduct(id) {
+    async function deleteProduct(id, completion) {
         apiService.deleteData(id)
         .then((response) => {
             if (response.status === 200) {
+                completion();
                 alert('Data produk berhasil dihapus!');
             } else {
                 alert(`Gagal menghapus data produk! ${response.error}`);
