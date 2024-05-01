@@ -119,37 +119,37 @@ function RegistrasiController() {
         });
 
         const handleSuccess = (updatedProducts, updatedAggregations) => {
-           return () => {
-            const newAggregations = updatedAggregations.filter((aggregation) => aggregation.id === null);
-            const aggregationsToBeUpdated = updatedAggregations.filter((aggregation) => aggregation.id !== null);
-            const aggregationsToBeDeleted = currentProducts[currentIndex]?.aggregations.filter((existingAggregation) => {
-                return !updatedAggregations.some((updatedAggregation) => updatedAggregation.id === existingAggregation.id);
-            });
-
-            if (newAggregations.length > 0 ) {
-                aggregationAPI.insertAggregations(newAggregations);
-            }
-            if (aggregationsToBeUpdated.length > 0) {
-                aggregationAPI.updateAggregations(aggregationsToBeUpdated);
-            }
-            if (aggregationsToBeDeleted.length > 0) {
-                aggregationsToBeDeleted.forEach((aggregation) => {
-                    aggregationAPI.deleteAggregations(aggregation.id);
+            return () => {
+                const newAggregations = updatedAggregations.filter((aggregation) => aggregation.id === null);
+                const aggregationsToBeUpdated = updatedAggregations.filter((aggregation) => aggregation.id !== null);
+                const aggregationsToBeDeleted = currentProducts[currentIndex]?.aggregations.filter((existingAggregation) => {
+                    return !updatedAggregations.some((updatedAggregation) => updatedAggregation.id === existingAggregation.id);
                 });
-            }
 
-            const updatedDisplayProducts = updatedProducts.map(product => ({
-                id: product.id,
-                name: product.name,
-                nie: product.nie,
-                het: product.het,
-                storage: product.storage,
-                aggregationLvl: product.aggregations.length
-            }));
-            
-            setCurrentProducts(updatedProducts);
-            setDisplayProducts(updatedDisplayProducts);
-           }
+                if (newAggregations.length > 0) {
+                    aggregationAPI.insertAggregations(newAggregations);
+                }
+                if (aggregationsToBeUpdated.length > 0) {
+                    aggregationAPI.updateAggregations(aggregationsToBeUpdated);
+                }
+                if (aggregationsToBeDeleted.length > 0) {
+                    aggregationsToBeDeleted.forEach((aggregation) => {
+                        aggregationAPI.deleteAggregations(aggregation.id);
+                    });
+                }
+
+                const updatedDisplayProducts = updatedProducts.map(product => ({
+                    id: product.id,
+                    name: product.name,
+                    nie: product.nie,
+                    het: product.het,
+                    storage: product.storage,
+                    aggregationLvl: product.aggregations.length
+                }));
+
+                setCurrentProducts(updatedProducts);
+                setDisplayProducts(updatedDisplayProducts);
+            }
         }
 
         if (currentIndex !== null) {
