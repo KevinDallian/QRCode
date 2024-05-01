@@ -18,7 +18,8 @@ function ProductAPI() {
     }, []);
 
     async function updateProduct(id, updatedData, completion) {
-        apiService.updateData(id, updatedData)
+        const jsonData = updatedData.toJSON();
+        apiService.updateData(id, jsonData)
         .then((response) => {
             if (response.status === 200) {
                 completion();
@@ -30,7 +31,8 @@ function ProductAPI() {
     }
 
     async function insertProduct(data, completion) {
-        apiService.insertData(data)
+        const jsonData = data.toJSON();
+        apiService.insertData(jsonData)
         .then((response) => {
             if (response.status === 200) {
                 completion();

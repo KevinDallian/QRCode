@@ -11,7 +11,10 @@ export default function DynamicForm({aggregations, onFormDataChange}) {
                     Kuantitas <input name='quantity' style={{width: '2vw', marginRight:'1vw'}} type='number' placeholder='Quantity' min={0} value={aggregation.quantity || 0} onChange={(e) => {onFormDataChange(index, e)}}/>
                 </label>
                 <label>
-                    Prefix <input name='prefix' style={{width: '2vw'}} placeholder='BX' value={aggregation.prefix || ''} onChange={(e) => {onFormDataChange(index, e)}}/>
+                    Prefix <input name='prefix' style={{width: '2vw', marginRight:'1vw'}} placeholder='BX' value={aggregation.prefix || ''} onChange={(e) => {onFormDataChange(index, e)}}/>
+                </label>
+                <label>
+                    Het <input name='het' style={{width: '5vw'}} type='number' placeholder='HET' min={0} value={aggregation.het || 0} onChange={(e) => {onFormDataChange(index, e)}}/>
                 </label>
             </div>
         )

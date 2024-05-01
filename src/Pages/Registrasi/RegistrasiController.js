@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import APICalls from '../../Utilities/API/APICalls';
 import Product from '../../Models/Product';
 import Aggregation from '../../Models/Aggregations';
 import ProductAPI from '../../Services/ProductAPI';
-import APIService from '../../Utilities/API/Api';
+import AggregationAPI from '../../Services/AggregationAPI';
 
 function RegistrasiController() {
     const [name, setName] = useState('');
@@ -12,33 +11,24 @@ function RegistrasiController() {
     const [storage, setStorage] = useState('');
     const [currentIndex, setCurrentIndex] = useState(null);
     const [aggregationLvl, setAggregationLvl] = useState(1);
-    const [aggregations, setAggregations] = useState([{name:'', quantity:0, level: 1}]);
+    const [aggregations, setAggregations] = useState([{name:'', quantity:0, level: 1, het: 0}]);
     const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Storage", "Aggregation Level"];
 
-    const [productData, setProductData] = useState(null);
-    const [aggregationsData, setAggregationsData] = useState(null);
     const [currentProducts, setCurrentProducts] = useState([]);
     const [displayProducts, setDisplayProducts] = useState([]);
     const productAPI = ProductAPI();
-    const aggregationAPI = APIService(APICalls.baseAggregations);
+    const aggregationAPI = AggregationAPI();
 
     useEffect(() => {
-        setProductData(productAPI.productData);
-        aggregationAPI.fetchData()
-            .then((response) => {
-                if (response.status === 200) {
-                    setAggregationsData(response.data);
-                } else {
-                    alert(`Gagal mengambil data aggregasi! ${response.error}`);
-                }
-            })
-    }, [productAPI.productData]);
-
-    useEffect(() => {
-        if (productData && aggregationsData) {
+        if (productAPI.productData, aggregationAPI.aggregationsData) {
+            const productData = productAPI.productData;
+            const aggregationsData = aggregationAPI.aggregationsData;
+            
             const updatedAggregations = aggregationsData.map((aggregation) => {
-                return new Aggregation(aggregation.id, aggregation.product_id, aggregation.name, aggregation.child_quantity, aggregation.package_code, aggregation.level);
+                return new Aggregation(aggregation.id, aggregation.product_id, aggregation.name, aggregation.child_quantity, aggregation.package_code, aggregation.level, aggregation.het);
             });
+
+            console.log(updatedAggregations);
             
             const updatedProducts = productData.map((product) => {
                 return new Product(product.product_id, product.name, product.nie, product.het, product.storage_condition, updatedAggregations.filter((aggregation) => aggregation.productId === product.product_id));
@@ -57,7 +47,7 @@ function RegistrasiController() {
             });
             setDisplayProducts(displayProducts);
         }
-    }, [productData, aggregationsData]);
+    }, [productAPI.productData, aggregationAPI.aggregationsData]);
     
 
     useEffect(() => {
@@ -76,7 +66,7 @@ function RegistrasiController() {
     }
     
     const setAggregationForm = (quantity) => {
-        const newFields = Array.from({ length: quantity }, (_, i) => ({ name: '', quantity: 0, prefix: '', level: i + 1 }));
+        const newFields = Array.from({ length: quantity }, (_, i) => ({ name: '', quantity: 0, prefix: '', het: 0, level: i + 1 }));
         setAggregations(newFields);
     }
 
@@ -117,35 +107,59 @@ function RegistrasiController() {
                 aggregation.name,
                 aggregation.quantity,
                 aggregation.prefix,
-                aggregation.level
+                aggregation.level,
+                aggregation.het
             );
         });
 
-        const handleSuccess = (updatedProducts) => {
+        const handleSuccess = (updatedProducts, updatedAggregations) => {
            return () => {
-                const updatedDisplayProducts = updatedProducts.map(product => ({
-                    id: product.id,
-                    name: product.name,
-                    nie: product.nie,
-                    het: product.het,
-                    storage: product.storage,
-                    aggregationLvl: product.aggregations.length
-                }));
-                
-                setCurrentProducts(updatedProducts);
-                setDisplayProducts(updatedDisplayProducts);
+            const newAggregations = updatedAggregations.filter((aggregation) => aggregation.id === null);
+            const aggregationsToBeUpdated = updatedAggregations.filter((aggregation) => aggregation.id !== null);
+            const aggregationsToBeDeleted = currentProducts[currentIndex]?.aggregations.filter((existingAggregation) => {
+                return !updatedAggregations.some((updatedAggregation) => updatedAggregation.id === existingAggregation.id);
+            });
+
+            if (newAggregations.length > 0 ) {
+                aggregationAPI.insertAggregations(newAggregations);
+            }
+            if (aggregationsToBeUpdated.length > 0) {
+                aggregationAPI.updateAggregations(aggregationsToBeUpdated);
+            }
+            if (aggregationsToBeDeleted.length > 0) {
+                aggregationsToBeDeleted.forEach((aggregation) => {
+                    aggregationAPI.deleteAggregations(aggregation.id);
+                });
+            }
+            
+            const updatedDisplayProducts = updatedProducts.map(product => ({
+                id: product.id,
+                name: product.name,
+                nie: product.nie,
+                het: product.het,
+                storage: product.storage,
+                aggregationLvl: product.aggregations.length
+            }));
+            
+            setCurrentProducts(updatedProducts);
+            setDisplayProducts(updatedDisplayProducts);
            }
         }
 
         if (currentIndex !== null) {
-            productAPI.updateProduct(currentProducts[currentIndex].id, updatedProduct.toJSON(), handleSuccess([...currentProducts.slice(0, currentIndex), updatedProduct, ...currentProducts.slice(currentIndex + 1)]));
+            productAPI.updateProduct(currentProducts[currentIndex].id, updatedProduct, handleSuccess([...currentProducts.slice(0, currentIndex), updatedProduct, ...currentProducts.slice(currentIndex + 1)], updatedAggregations));
         } else {
-            productAPI.insertProduct(updatedProduct, handleSuccess([...currentProducts, updatedProduct]));
+            productAPI.insertProduct(updatedProduct, handleSuccess([...currentProducts, updatedProduct], updatedAggregations));
         }
     }
 
     function deleteData() {
         if (currentIndex !== null) {
+            const aggregations = currentProducts[currentIndex].aggregations;
+            aggregations.forEach((aggregation) => {
+                aggregationAPI.deleteAggregations(aggregation.id);
+            });
+
             const updatedProducts = currentProducts.filter((_, index) => index !== currentIndex);
             const handleSuccess = (updatedProducts) => {
                 return () => {
