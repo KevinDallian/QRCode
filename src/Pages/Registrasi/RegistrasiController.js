@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { updateProduct, insertProduct, deleteProduct } from '../../Utilities/API/Api';
-import useFetch from '../../Utilities/API/UseFetch';
 import APICalls from '../../Utilities/API/APICalls';
 import Product from '../../Models/Product';
 import Aggregation from '../../Models/Aggregations';
+import ProductAPI from '../../Services/ProductAPI';
+import APIService from '../../Utilities/API/Api';
 
 function RegistrasiController() {
     const [name, setName] = useState('');
@@ -15,10 +15,24 @@ function RegistrasiController() {
     const [aggregations, setAggregations] = useState([{name:'', quantity:0, level: 1}]);
     const header = ["No", "ID Produk", "Nama Produk", "NIE", "HET", "Storage", "Aggregation Level"];
 
-    const {data : productData} = useFetch(APICalls.baseProducts);
-    const {data : aggregationsData} = useFetch(APICalls.baseAggregations);
+    const [productData, setProductData] = useState(null);
+    const [aggregationsData, setAggregationsData] = useState(null);
     const [currentProducts, setCurrentProducts] = useState([]);
     const [displayProducts, setDisplayProducts] = useState([]);
+    const productAPI = ProductAPI();
+    const aggregationAPI = APIService(APICalls.baseAggregations);
+
+    useEffect(() => {
+        setProductData(productAPI.productData);
+        aggregationAPI.fetchData()
+            .then((response) => {
+                if (response.status === 200) {
+                    setAggregationsData(response.data);
+                } else {
+                    alert(`Gagal mengambil data aggregasi! ${response.error}`);
+                }
+            })
+    }, [productAPI.productData]);
 
     useEffect(() => {
         if (productData && aggregationsData) {
@@ -43,7 +57,7 @@ function RegistrasiController() {
             });
             setDisplayProducts(displayProducts);
         }
-    }, [productData, aggregationsData])
+    }, [productData, aggregationsData]);
     
 
     useEffect(() => {
@@ -96,6 +110,17 @@ function RegistrasiController() {
             aggregations
         );
 
+        const updatedAggregations = aggregations.map((aggregation) => {
+            return new Aggregation(
+                aggregation.id,
+                updatedProduct.id,
+                aggregation.name,
+                aggregation.quantity,
+                aggregation.prefix,
+                aggregation.level
+            );
+        });
+
         const handleSuccess = (updatedProducts) => {
             const updatedDisplayProducts = updatedProducts.map(product => ({
                 id: product.id,
@@ -111,7 +136,7 @@ function RegistrasiController() {
         }
 
         if (currentIndex !== null) {
-            updateProduct(currentProducts[currentIndex].id, updatedProduct)
+            productAPI.updateProduct(currentProducts[currentIndex].id, updatedProduct.toJSON())
                 .then((response) => {
                     if (response.status === 200) {
                         handleSuccess([
@@ -125,8 +150,25 @@ function RegistrasiController() {
                         alert(`Produk Update Gagal! ${response.error}`);
                     }
                 });
+            updatedAggregations.forEach((aggregation) => {
+                if (aggregation.id !== null) {
+                    aggregationAPI.updateData(aggregation.id, aggregation.toJSON())
+                        .then((response) => {
+                            if (response.status !== 200) {
+                                alert(`Aggregasi Update Gagal! ${response.error}`);
+                            }
+                        });
+                } else {
+                    aggregationAPI.insertData(aggregation.toJSON())
+                        .then((response) => {
+                            if (response.status !== 200) {
+                                alert(`Aggregasi Insert Gagal! ${response.error}`);
+                            }
+                        });
+                }
+            });
         } else {
-            insertProduct(updatedProduct)
+            productAPI.insertProduct(updatedProduct)
                 .then((response) => {
                     if (response.status === 200) {
                         handleSuccess([...currentProducts, updatedProduct]);
@@ -150,9 +192,8 @@ function RegistrasiController() {
                 aggregationLvl: product.aggregations.length
             }));
 
-            deleteProduct(currentProducts[currentIndex].id)
+            productAPI.deleteProduct(currentProducts[currentIndex].id)
                 .then((response) => {
-                    console.log(response);
                     if (response.status === 200) {
                         alert('Produk Berhasil Dihapus!');
                         setCurrentProducts(updatedProducts);

@@ -1,36 +1,44 @@
-import APICalls from "./APICalls";
+function APIService(baseUrl) {
 
+    async function fetchData(){
+        const response = await fetch(baseUrl, {method: 'GET'});
+        return response.json();
+    }
 
-export async function updateProduct(productId, updatedProduct) {
-    const response = await fetch(`${APICalls.baseProducts}/${productId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedProduct.toJSON())
-    });
+    async function updateData(id, updatedData) {
+        const response = await fetch(`${baseUrl}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedData)
+        });
+        return response.json();
+    }
 
-    return response.json();
+    async function insertData(data) {
+        const response = await fetch(baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        return response.json();
+    }
+
+    async function deleteData(id) {
+        const response = await fetch(`${baseUrl}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.json();
+    }
+    
+    return { fetchData, updateData, insertData, deleteData};
 }
 
-export async function insertProduct(product) {
-    const response = await fetch(APICalls.baseProducts, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(product.toJSON())
-    });
-
-    return response.json();
-}
-
-export async function deleteProduct(productId) {
-    const response = await fetch(`${APICalls.baseProducts}/${productId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.json();
-}
+export default APIService;

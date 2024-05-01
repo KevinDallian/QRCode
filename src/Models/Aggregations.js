@@ -1,5 +1,5 @@
 class Aggregation {
-    constructor(id, productId, name, quantity, prefix, level) {
+    constructor(id = null, productId, name, quantity, prefix, level) {
         this.id = id;
         this.productId = productId;
         this.name = name;
