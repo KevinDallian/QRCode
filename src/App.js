@@ -21,8 +21,8 @@ function App() {
           <Routes>
             <Route path='/'>
               <Route index element={<Home />}></Route>
-              <Route path='registrasi' element={<Registrasi products={products} setProducts={setProducts}/>}/>
-              <Route path='jobOrder' element={<JobOrder jobs={jobs} setJobs={setJobs} products={products}/>}/>
+              <Route path='registrasi' element={<Registrasi/>}/>
+              <Route path='jobOrder' element={<JobOrder/>}/>
               <Route path='serialisasi' element={<Serialisasi jobs={jobs} setJobs={setJobs} products={products} globalOrders={orders} setGlobalOrders={setOrders}/>} />
               <Route path='agregasi' element={<Agregasi jobs={jobs} setJobs={setJobs} products={products} globalOrders={orders} setGlobalOrders={setOrders} globalMasterboxs={masterboxs} setGlobalMasterbox={setMasterbox}/>}/>
               <Route path='reporting' element={<Reporting jobs={jobs} products={products} orders={orders} masterboxs={masterboxs}/>}/>

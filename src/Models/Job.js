@@ -8,6 +8,8 @@ class Job {
         this.orderQuantity = orderQuantity;
         this.jobStatus = jobStatus;
         this.dateCreated = dateCreated;
+        this.orders = [];
+        this.masterboxs = [];
     }
 
     static validateData(productID, batchNo, expiredDate, topQuantity, orderQuantity, jobStatus){

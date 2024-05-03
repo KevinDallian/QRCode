@@ -6,6 +6,7 @@ function JobAPI() {
     const apiService = APIService(API_ENDPOINTS.jobs);
     const [jobsData, setJobsData] = useState(null);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         apiService.fetchData()
             .then((response) => {
