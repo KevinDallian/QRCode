@@ -6,7 +6,7 @@ import ReactTable from '../../Components/Table/ReactTable';
 import JobController from './JobController';
 
 export default function JobOrder() {
-    const jobController = new JobController();
+    const jobController = JobController();
   
     return (
       <>
@@ -51,7 +51,7 @@ export default function JobOrder() {
             {jobController.currentProduct !== null && (
               <>
                 <div style={{ fontWeight: "bold" }}>
-                  Product Quantity Estimation :
+                  Estimasi Kuantitas Produk:
                 </div>
                 <div>{jobController.quantity} Produk</div>
                 {jobController.currentProduct.aggregations
@@ -107,7 +107,7 @@ export default function JobOrder() {
           <ReactTable
             headers={jobController.header}
             datas={jobController.jobDisplay}
-            currentIndex={null}
+            currentIndex={jobController.currentIndex}
             onClickHandler={jobController.onClickRow}
           />
         </div>

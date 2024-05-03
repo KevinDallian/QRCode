@@ -42,7 +42,7 @@ export function DateForm({variableName, value, setValue}){
 }
 
 export function OptionForm({variableName, options, value, setValue, hasDefaultValue = true}) {
-    const optionList = options.map((option) => <option key={option} value={option}>{option}</option>);
+    const optionList = options.map((option) => <option key={option.value || option} value={option.value || option}>{option.placeholder || option}</option>);
     return (
         <>
             <div className='box'>

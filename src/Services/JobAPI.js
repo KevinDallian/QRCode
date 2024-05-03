@@ -17,13 +17,12 @@ function JobAPI() {
             });
     }, []);
 
-    async function insertJobs(jobsData) {
-        const jsonData = {
-            jobs : jobsData.map((job) => job.toJSON())
-        }
+    async function insertJob(jobData, completion) {
+        const jsonData = jobData.toJSON();
         apiService.insertData(jsonData)
             .then((response) => {
                 if (response.status === 200) {
+                    completion();
                     alert('Data pekerjaan berhasil ditambahkan!');
                 } else {
                     alert(`Gagal menambahkan data pekerjaan! ${response.error}`);
@@ -31,24 +30,24 @@ function JobAPI() {
             });
     }
 
-    async function updateJobs(jobsData) {
-        const jsonData = {
-            jobs : jobsData.map((job) => job.toJSON())
-        }
-        apiService.updateBatchDatas(jsonData)
+    async function updateJob(jobId, jobData, completion) {
+        const jsonData = jobData.toJSON();
+        apiService.updateData(jobId, jsonData)
             .then((response) => {
                 if (response.status === 200) {
-                    alert('Data pekerjaan berhasil diupdate!');
+                    completion();
+                    alert('Data pekerjaan berhasil diubah!');
                 } else {
-                    alert(`Gagal mengupdate data pekerjaan! ${response.error}`);
+                    alert(`Gagal mengubah data pekerjaan! ${response.error}`);
                 }
-            })
+            });
     }
 
-    async function deleteJobs(jobId) {
+    async function deleteJob(jobId, completion) {
         apiService.deleteData(jobId)
             .then((response) => {
                 if (response.status === 200) {
+                    completion();
                     alert('Data pekerjaan berhasil dihapus!');
                 } else {
                     alert(`Gagal menghapus data pekerjaan! ${response.error}`);
@@ -56,7 +55,7 @@ function JobAPI() {
             });
     }
 
-    return { jobsData, insertJobs, updateJobs, deleteJobs};
+    return { jobsData, insertJob, updateJob, deleteJob};
 }
 
 export default JobAPI;

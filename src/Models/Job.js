@@ -16,14 +16,14 @@ class Job {
 
     toJSON(){
         return {
-            id : this.id,
-            productID : this.productID,
-            batchNo : this.batchNo,
-            expiredDate : this.expiredDate,
-            topQuantity : this.topQuantity,
-            orderQuantity : this.orderQuantity,
-            jobStatus : this.jobStatus,
-            dateCreated : this.dateCreated,
+            job_id : this.id,
+            product_id : this.productID,
+            batch_no : this.batchNo,
+            expired_date : this.expiredDate,
+            top_order_qty : this.topQuantity,
+            bottom_order_qty : this.orderQuantity,
+            status : this.jobStatus,
+            date_created : this.dateCreated,
         }
     }
 }

@@ -82,7 +82,6 @@ function RegistrasiController() {
 
     function onClickRow(index){
         setCurrentIndex(index);
-        
         const selectedData = currentProducts[index];
         setFormData(selectedData);
     }
