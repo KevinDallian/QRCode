@@ -4,39 +4,61 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import ActionButton from '../../Components/ActionButton/ActionButton';
 import ReactTable from '../../Components/Table/ReactTable';
+import JobAPI from '../../Services/JobAPI';
+import Job from '../../Models/Job';
+import Product from '../../Models/Product';
+import ProductAPI from '../../Services/ProductAPI';
 
-export default function JobOrder({jobs, setJobs, products}) {
+export default function JobOrder({}) {
     const [productID, setProductID] = useState('');
     const [batchNo, setBatchNo] = useState('');
     const [expiredDate, setDate] = useState('');
     const [topQuantity, setTopQuantity] = useState(0);
     const [quantity, setQuantity] = useState('');
     const [jobStatus, setJobStatus] = useState('Active');
-    const productsID = products.map((product) => `${product.id}`);
+
+    const [jobs, setJobs] = useState(null);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(null);
-    const [jobDisplay, setJobDisplay] = useState(jobs.map((job) => {
-        return {
-            id : job.id,
-            productID : job.productID,
-            batchNo : job.batchNo,
-            expiredDate : job.expiredDate,
-            topAggregationQty : job.topAggregationQty,
-            productQty: job.productQty,
-            jobStatus : job.jobStatus,
-        }        
-    }));
+    const [jobDisplay, setJobDisplay] = useState([]);
+
+    const jobAPI = JobAPI();
+    const productAPI = ProductAPI();
+    const [productsID, setProductsID] = useState([]);
 
     const header = ["No", "ID Job", "ID Produk", "Batch No", "Expired Date", "Top Aggregation Quantity", "Order Quantity", "Job Status"];
 
     useEffect(() => {
-        if (productID !== null) {
-            const selectedProduct = products.find((product) => product.id === productID);
-            if (selectedProduct) {
-                setCurrentProduct(selectedProduct);
-            }
+        const jobsData = jobAPI.jobsData;
+        if (jobsData) {
+            const updatedJobs = jobsData.map((job) => {
+                return new Job(job.job_id, job.product_id, job.batch_no, job.expired_date, job.top_order_qty, job.bottom_order_qty, job.status, job.date_created)
+            });
+            setJobs(updatedJobs);
+            setJobDisplay(updatedJobs.map((job) => {
+                return {
+                    id : job.id,
+                    productID : job.productID,
+                    batchNo : job.batchNo,
+                    expiredDate : job.expiredDate,
+                    topAggregationQty : job.topQuantity,
+                    productQty: job.orderQuantity,
+                    jobStatus : job.jobStatus,
+                }        
+            }));
         }
-    }, [productID, products]);
+    }, [jobAPI.jobsData]);
+
+    useEffect(() => {
+        const productData = productAPI.productData;
+        if (productData) {
+            const updatedProducts = productData.map((product) => {
+                return new Product(product.product_id, product.name, product.nie, product.het, product.storage_condition, product.aggregations);
+            });
+            const productsID = updatedProducts.map((product) => product.id);
+            setProductsID(productsID);
+        }
+    }, [productAPI.productData]);
 
     useEffect(() => {
         if (currentProduct) {

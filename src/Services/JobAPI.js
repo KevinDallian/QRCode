@@ -58,3 +58,5 @@ function JobAPI() {
 
     return { jobsData, insertJobs, updateJobs, deleteJobs};
 }
+
+export default JobAPI;
