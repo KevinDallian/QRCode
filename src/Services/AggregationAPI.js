@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import APICalls from "../Utilities/API/APICalls";
+import API_ENDPOINTS from "../Utilities/API/APICalls";
 import APIService from "../Utilities/API/Api";
 
 function AggregationAPI() {
-    const apiService = APIService(APICalls.baseAggregations);
+    const apiService = APIService(API_ENDPOINTS.aggregations);
     const [aggregationsData, setAggregationsData] = useState(null);
 
     useEffect(() => {

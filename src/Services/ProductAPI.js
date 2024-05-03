@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import APIService from "../Utilities/API/Api";
-import APICalls from "../Utilities/API/APICalls";
+import API_ENDPOINTS from "../Utilities/API/APICalls";
 
 function ProductAPI() {
-    const apiService = APIService(APICalls.baseProducts);
+    const apiService = APIService(API_ENDPOINTS.products);
     const [productData, setProductData] = useState(null);
 
     useEffect(() => {
