@@ -5,165 +5,37 @@ import ReactTable from '../../Components/Table/ReactTable';
 import { useState } from 'react';
 import Modal from '../../Components/Modal/Modal';
 import QRCode from 'react-qr-code';
-import JobApi from '../../Services/JobAPI';
-import OrderApi from '../../Services/OrderAPI';
-import ProductApi from '../../Services/ProductAPI';
-import Job from '../../Models/Job';
-import Order from '../../Models/Order';
+import SerialisasiController from './SerialisasiController';
 
-export default function Serialisasi({globalOrders, setGlobalOrders}){
-    const headers = ['No', 'Order ID', 'Job ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
-    const [showJobModal, setShowJobModal] = useState(false);
-    const [showEndModal, setShowEndModal] = useState(false);
-    const [currentJob, setCurrentJob] = useState({});
-    const [showPrintModal, setShowPrintModal] = useState(false);
-    const [orders, setOrders] = useState([]);
-    const [ordersDisplay, setOrdersDisplay] = useState([]);
-    const jobApi = JobApi();
-    const productApi = ProductApi();
-    const orderApi = OrderApi();
-
-    const loadJob = async (index) => {
-        const job = jobApi.jobsData[index];
-        const updatedJob = new Job(job.job_id, job.product_id, job.batch_no, job.expired_date, job.top_order_qty, job.bottom_order_qty , job.status, job.date_created);
-        const product = productApi.productData.find((product) => product.product_id === updatedJob.productID);
-        setCurrentJob(updatedJob);
-
-        const completion = (orders) => {
-            if (orders.length > 0) {
-                const updatedOrders = orders.map((order) => {
-                    return new Order(order.order_id, order.job_id, order.product_id, null, null, order.status);
-                });
-                const orderDisplay = updatedOrders.map((data, index) => {
-                    return {
-                        id : data.id,
-                        jobID : data.jobID,
-                        masterboxID : data.masterboxID,
-                        manufactureDate : data.manufactureDate,
-                        status : data.status,
-                    }
-                })
-                setOrders(updatedOrders);
-                setOrdersDisplay(orderDisplay);
-            } else {
-                generateData(updatedJob, product);
-            }
-        }
-        
-        orderApi.fetchOrdersFromJobId(updatedJob.id, completion);
-    }
-
-    const endJob = () => {
-        const updatedJob = currentJob;
-        updatedJob.jobStatus = "Ended";
-        setCurrentJob(updatedJob);
-        toggleModal("EndModal");
-    }
-
-    const toggleModal = (modalType) => {
-        if (modalType === "JobModal") {
-            setShowJobModal(!showJobModal);
-        } else if (modalType === "EndModal") {
-            setShowEndModal(!showEndModal);
-        } else if (modalType === "PrintModal") {
-            setShowPrintModal(!showPrintModal);
-        }
-    }
-
-    const endPrint = () => {
-        setOrders([]);
-        const updatedJob = currentJob;
-        updatedJob.jobStatus = "Printed";
-        toggleModal("PrintModal");
-    }
-
-    const formatDate = (date) => {
-        if (!date) return "";
-        if (date instanceof Date) {
-            return date.toISOString().split('T')[0];
-        } else {
-            return new Date(date).toISOString().split('T')[0];
-        }
-    }
-
-    const printData = () => {
-        const ordersTobePrinted = orders.map((order) => {
-            order.status = "Printed";
-            order.printDate = new Date().toLocaleDateString();
-            return order;
-        });
-        setOrders(ordersTobePrinted);
-        setOrdersDisplay(ordersTobePrinted.map((data, index) => {
-            return {
-                id : data.id,
-                jobID : data.jobID,
-                masterboxID : data.masterboxID,
-                manufactureDate : data.manufactureDate,
-                status : data.status,
-            }
-        }));
-        const globalOrdersUpdated = globalOrders.map((globalOrder) => {
-            const order = ordersTobePrinted.find((order) => order.id === globalOrder.id);
-            if (order) {
-                return order;
-            } else {
-                return globalOrder;
-            }
-        });
-        setGlobalOrders(globalOrdersUpdated);
-        toggleModal("PrintModal");
-    }
-
-    const generateData = (job, product) => {
-        const generatedData = Array.from({ length: job.orderQuantity }, (_, index) => {
-            const generatedID = `(90)${product.nie}(91)${formatDate(job.expiredDate)}(00)${job.batchNo}(01)${(index + 1).toString().padStart(3, "0")}`;
-            return new Order(generatedID, job.id, product.product_id, null, null, "Not Printed");
-        });
-        
-        const handleSuccess = (datas) => {
-            const ordersDisplay = datas.map((data) => {
-                return {
-                    id : data.id,
-                    jobID : data.jobID,
-                    masterboxID : data.masterboxID,
-                    manufactureDate : data.manufactureDate,
-                    status : data.status,
-                }
-            });
-            return () => {
-                setOrders(datas);
-                setOrdersDisplay(ordersDisplay);
-            }
-        }
-        orderApi.insertOrders(generatedData, handleSuccess(generatedData));
-    }
+export default function Serialisasi({ globalOrders, setGlobalOrders }) {
+    const controller = SerialisasiController();
 
     return (
         <>
-            {showJobModal && <JobModal toggleModal={()=>toggleModal("JobModal")} loadJob={loadJob} jobs={jobApi.jobsData.filter((job) => job.status === "Active")}/>}
+            {controller.showJobModal && <JobModal toggleModal={() => controller.toggleModal("JobModal")} loadJob={controller.loadJob} jobs={controller.jobApi.jobsData.filter((job) => job.status === "Active")} />}
             <Link to='/'>Back</Link>
-            {showEndModal && <EndModal toggleModal={()=>toggleModal("EndModal")} endJob={endJob}/>}
-            {showPrintModal && <PrintModal data={orders} toggleModal={()=>endPrint()} job={currentJob} product={productApi.productData.find((product) => product.id === currentJob.productID)}/>}
+            {controller.showEndModal && <EndModal toggleModal={() => controller.toggleModal("EndModal")} endJob={controller.endJob} />}
+            {controller.showPrintModal && <PrintModal data={controller.orders} toggleModal={() => controller.endPrint()} job={controller.currentJob} product={controller.productApi.productData.find((product) => product.id === controller.currentJob.productID)} />}
             <h1 className='title'>Serialisasi</h1>
             <div className='flex-row job-display'>
                 <div className='col'>
-                    <JobList name={"Job ID"} detail={currentJob.id}/>
-                    <JobList name={"Produk"} detail={currentJob.productID}/>
-                    <JobList name={"Batch No"} detail={currentJob.batchNo} />
+                    <JobList name={"Job ID"} detail={controller.currentJob.id} />
+                    <JobList name={"Produk"} detail={controller.currentJob.productID} />
+                    <JobList name={"Batch No"} detail={controller.currentJob.batchNo} />
                 </div>
                 <div className='col'>
-                    <JobList name={"Order Quantity"} detail={currentJob.orderQuantity}/>
-                    <JobList name={"Expired Date"} detail={formatDate(currentJob.expiredDate)}/>
-                    <JobList name={"Job Status"} detail={currentJob.jobStatus}/>
+                    <JobList name={"Order Quantity"} detail={controller.currentJob.orderQuantity} />
+                    <JobList name={"Expired Date"} detail={controller.formatDate(controller.currentJob.expiredDate)} />
+                    <JobList name={"Job Status"} detail={controller.currentJob.jobStatus} />
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Load Job"} onClickFunction={()=>{toggleModal("JobModal")}}/>
-                    <ActionButton name={"End Job"} onClickFunction={()=> {toggleModal("EndModal")}} disabled={Object.keys(currentJob).length === 0}/>
+                    <ActionButton name={"Load Job"} onClickFunction={() => { controller.toggleModal("JobModal") }} />
+                    <ActionButton name={"End Job"} onClickFunction={() => { controller.toggleModal("EndModal") }} disabled={Object.keys(controller.currentJob).length === 0} />
                 </div>
                 <div className='flex-column'>
-                    <ActionButton name={"Print"} onClickFunction={printData}/>
-                    <ActionButton name={"Test Print"} onClickFunction={()=> {console.log("Test Print")}}/>
-                    <ActionButton name={"Stop Print"} onClickFunction={()=> {console.log("Stop Print")}}/>
+                    <ActionButton name={"Print"} onClickFunction={controller.printData} />
+                    <ActionButton name={"Test Print"} onClickFunction={() => { console.log("Test Print") }} />
+                    <ActionButton name={"Stop Print"} onClickFunction={() => { console.log("Stop Print") }} />
                 </div>
             </div>
             <div className='print-status'>
@@ -173,7 +45,7 @@ export default function Serialisasi({globalOrders, setGlobalOrders}){
                 <p>Cancelled        :</p>
             </div>
             <div id='table-serialisasi'>
-                <ReactTable headers={headers} datas={ordersDisplay} onClickHandler={(e)=>{console.log(e)}}/>
+                <ReactTable headers={controller.headers} datas={controller.ordersDisplay} onClickHandler={(e) => { console.log(e) }} />
             </div>
         </>
     );
