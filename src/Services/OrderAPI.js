@@ -6,13 +6,14 @@ function OrderAPI(){
     const apiService = APIService(API_ENDPOINTS.orders);
     const [ordersData, setOrdersData] = useState([]);
 
-    async function fetchOrdersFromJobId(jobId){
+    async function fetchOrdersFromJobId(jobId, completion){
+        console.log(jobId);
         apiService.fetchDataFromId(jobId)
             .then((response)=> {
                 if (response.status === 200) {
-                    setOrdersData(response.data);
+                    completion(response.data);
                 } else {
-                    alert(`Gagal mengambil data order! ${response.error}`);
+                    return [];
                 }
             });
     }

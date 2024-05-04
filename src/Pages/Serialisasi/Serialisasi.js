@@ -23,17 +23,34 @@ export default function Serialisasi({globalOrders, setGlobalOrders}){
     const productApi = ProductApi();
     const orderApi = OrderApi();
 
-    const loadJob = (index) => {
+    const loadJob = async (index) => {
         const job = jobApi.jobsData[index];
         const updatedJob = new Job(job.job_id, job.product_id, job.batch_no, job.expired_date, job.top_order_qty, job.bottom_order_qty , job.status, job.date_created);
         const product = productApi.productData.find((product) => product.product_id === updatedJob.productID);
         setCurrentJob(updatedJob);
-        if (orderApi.ordersData.some((order) => order.jobID === updatedJob.id)) {
-            const orders = globalOrders.filter((order) => order.jobID === updatedJob.id);
-            setOrders(orders);
-        } else {
-            generateData(updatedJob, product);
+
+        const completion = (orders) => {
+            if (orders.length > 0) {
+                const updatedOrders = orders.map((order) => {
+                    return new Order(order.order_id, order.job_id, order.product_id, null, null, order.status);
+                });
+                const orderDisplay = updatedOrders.map((data, index) => {
+                    return {
+                        id : data.id,
+                        jobID : data.jobID,
+                        masterboxID : data.masterboxID,
+                        manufactureDate : data.manufactureDate,
+                        status : data.status,
+                    }
+                })
+                setOrders(updatedOrders);
+                setOrdersDisplay(orderDisplay);
+            } else {
+                generateData(updatedJob, product);
+            }
         }
+        
+        orderApi.fetchOrdersFromJobId(updatedJob.id, completion);
     }
 
     const endJob = () => {
@@ -104,19 +121,21 @@ export default function Serialisasi({globalOrders, setGlobalOrders}){
         });
         
         const handleSuccess = (datas) => {
-            setOrders(datas);
-            setOrdersDisplay(datas.map((data) => {
+            const ordersDisplay = datas.map((data) => {
                 return {
                     id : data.id,
                     jobID : data.jobID,
                     masterboxID : data.masterboxID,
                     manufactureDate : data.manufactureDate,
                     status : data.status,
-                }    
-            }));
+                }
+            });
+            return () => {
+                setOrders(datas);
+                setOrdersDisplay(ordersDisplay);
+            }
         }
-        orderApi.insertOrders(generatedData, handleSuccess);
-        setGlobalOrders([...globalOrders, ...generatedData]);
+        orderApi.insertOrders(generatedData, handleSuccess(generatedData));
     }
 
     return (

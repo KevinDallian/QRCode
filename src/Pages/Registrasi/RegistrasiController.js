@@ -125,13 +125,13 @@ function RegistrasiController() {
                     return !updatedAggregations.some((updatedAggregation) => updatedAggregation.id === existingAggregation.id);
                 });
 
-                if (newAggregations.length > 0) {
+                if (newAggregations && newAggregations.length > 0) {
                     aggregationAPI.insertAggregations(newAggregations);
                 }
-                if (aggregationsToBeUpdated.length > 0) {
+                if (aggregationsToBeUpdated && aggregationsToBeUpdated.length > 0) {
                     aggregationAPI.updateAggregations(aggregationsToBeUpdated);
                 }
-                if (aggregationsToBeDeleted.length > 0) {
+                if (aggregationsToBeDeleted && aggregationsToBeDeleted.length > 0) {
                     aggregationsToBeDeleted.forEach((aggregation) => {
                         aggregationAPI.deleteAggregations(aggregation.id);
                     });
