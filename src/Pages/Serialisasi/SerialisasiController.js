@@ -85,20 +85,27 @@ function SerialisasiController(){
     const printData = () => {
         const ordersTobePrinted = orders.map((order) => {
             order.status = "Printed";
-            order.printDate = new Date().toLocaleDateString();
+            order.manufactureDate = new Date().toLocaleDateString();
             return order;
         });
-        setOrders(ordersTobePrinted);
-        setOrdersDisplay(ordersTobePrinted.map((data, index) => {
-            return {
-                id : data.id,
-                jobID : data.jobID,
-                masterboxID : data.masterboxID,
-                manufactureDate : data.manufactureDate,
-                status : data.status,
-            }
-        }));
-        toggleModal("PrintModal");
+
+        const handleSuccess = () => {
+            setOrders(ordersTobePrinted);
+            setOrdersDisplay(ordersTobePrinted.map((data) => {
+                return {
+                    id : data.id,
+                    jobID : data.jobID,
+                    masterboxID : data.masterboxID,
+                    manufactureDate : data.manufactureDate,
+                    status : data.status,
+                }
+            }));
+            toggleModal("PrintModal");
+        }
+
+        orderApi.updateOrders(ordersTobePrinted, handleSuccess);
+
+        
     }
 
     const generateData = (job, product) => {
@@ -127,18 +134,12 @@ function SerialisasiController(){
 
     return {
         headers,
-        showJobModal,
-        setShowJobModal,
-        showEndModal,
-        setShowEndModal,
-        currentJob,
-        setCurrentJob,
-        showPrintModal,
-        setShowPrintModal,
-        orders,
-        setOrders,
-        ordersDisplay,
-        setOrdersDisplay,
+        showJobModal, setShowJobModal,
+        showEndModal, setShowEndModal,
+        currentJob, setCurrentJob,
+        showPrintModal, setShowPrintModal,
+        orders, setOrders,
+        ordersDisplay, setOrdersDisplay,
         jobApi,
         productApi,
         orderApi,

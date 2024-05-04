@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
 import API_ENDPOINTS from "../Utilities/API/APICalls";
 import APIService from "../Utilities/API/Api";
 
 function OrderAPI(){
     const apiService = APIService(API_ENDPOINTS.orders);
-    const [ordersData, setOrdersData] = useState([]);
 
     async function fetchOrdersFromJobId(jobId, completion){
-        console.log(jobId);
         apiService.fetchDataFromId(jobId)
             .then((response)=> {
                 if (response.status === 200) {
@@ -18,11 +15,14 @@ function OrderAPI(){
             });
     }
 
-    async function updateOrders(orders){
-        const jsonData = orders.map(order => order.toJSON());
+    async function updateOrders(orders, completion){
+        const jsonData = {
+            orders: orders.map(order => order.toJSON())
+        };
         apiService.updateBatchDatas(jsonData)
             .then((response) => {
                 if (response.status === 200) {
+                    completion();
                     alert('Data orders berhasil diupdate!');
                 } else {
                     alert(`Gagal mengubah data order! ${response.error}`);
@@ -80,7 +80,7 @@ function OrderAPI(){
         });
     }
 
-    return { ordersData, fetchOrdersFromJobId, updateOrders, updateOrdersMasterbox, insertOrders, deleteOrders };
+    return { fetchOrdersFromJobId, updateOrders, updateOrdersMasterbox, insertOrders, deleteOrders };
 }
 
 export default OrderAPI;
