@@ -15,7 +15,7 @@ export default function Serialisasi() {
             {controller.showJobModal && <JobModal toggleModal={() => controller.toggleModal("JobModal")} loadJob={controller.loadJob} jobs={controller.jobApi.jobsData} />}
             <Link to='/'>Back</Link>
             {controller.showEndModal && <EndModal toggleModal={() => controller.toggleModal("EndModal")} endJob={controller.endJob} />}
-            {controller.showPrintModal && <PrintModal data={controller.orders} toggleModal={() => controller.endPrint()} job={controller.currentJob} product={controller.productApi.productData.find((product) => product.id === controller.currentJob.productID)} />}
+            {controller.showPrintModal && <PrintModal data={controller.orders} toggleModal={() => controller.endPrint()} job={controller.currentJob} product={controller.productApi.productData.find((product) => product.product_id === controller.currentJob.productID)} />}
             <h1 className='title'>Serialisasi</h1>
             <div className='flex-row job-display'>
                 <div className='col'>
@@ -124,6 +124,7 @@ function PrintModal({data, toggleModal, job, product}) {
     }
 
     const dataToBePrinted = data.map((data, index) => {
+        console.log(product);
         return (
             <div key={index} className='modal-border flex-space-between'>
                 <table id='table'>

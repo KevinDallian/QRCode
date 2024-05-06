@@ -104,8 +104,6 @@ function SerialisasiController(){
         }
 
         orderApi.updateOrders(ordersTobePrinted, handleSuccess);
-
-        
     }
 
     const generateData = (job, product) => {

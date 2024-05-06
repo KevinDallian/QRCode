@@ -46,6 +46,7 @@ function JobController() {
                 return new Job(job.job_id, job.product_id, job.batch_no, job.expired_date, job.top_order_qty, job.bottom_order_qty, job.status, job.date_created)
             });
             setJobs(updatedJobs);
+            console.log(updatedJobs);
             setJobDisplay(updatedJobs.map((job) => {
                 return {
                     id : job.id,
