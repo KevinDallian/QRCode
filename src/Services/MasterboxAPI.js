@@ -7,6 +7,10 @@ function MasterboxAPI(){
     const [masterboxsData, setMasterboxsData] = useState([]);
 
     useEffect(() => {
+        
+    }, []);
+
+    async function fetchData(){
         apiService.fetchData()
             .then((response) => {
                 if (response.status === 200) {
@@ -15,7 +19,7 @@ function MasterboxAPI(){
                     alert(`Gagal mengambil data masterbox! ${response.error}`);
                 }
             });
-    }, []);
+    }
 
     async function insertMasterbox(masterboxData, completion){
         const jsonData = masterboxData.toJSON();

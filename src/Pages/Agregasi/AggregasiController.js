@@ -6,11 +6,11 @@ import Product from '../../Models/Product';
 import Masterbox from '../../Models/Masterbox';
 import Order from '../../Models/Order';
 import Aggregation from '../../Models/Aggregations'
-import ProductAPI from '../../Services/ProductAPI';
-import MasterboxAPI from '../../Services/MasterboxAPI';
-import JobAPI from '../../Services/JobAPI';
-import OrderAPI from '../../Services/OrderAPI';
-import AggregationAPI from '../../Services/AggregationAPI';
+import ProductApi from '../../Services/ProductAPI';
+import MasterboxApi from '../../Services/MasterboxAPI';
+import JobApi from '../../Services/JobAPI';
+import OrderApi from '../../Services/OrderAPI';
+import AggregationApi from '../../Services/AggregationAPI';
 
 function AgregasiController() {
     const headers = ['No', 'Order ID', 'Masterbox ID', 'Manufacture Date', 'Status'];
@@ -27,11 +27,11 @@ function AgregasiController() {
     const [orders, setOrders] = useState([]);
     const [masterboxs, setMasterboxs] = useState([]);
 
-    const productAPI = ProductAPI();
-    const aggregasiAPI = AggregationAPI();
-    const masterboxAPI = MasterboxAPI();
-    const jobAPI = JobAPI();
-    const orderAPI = OrderAPI();
+    const jobApi = JobApi();
+    const productApi = ProductApi();
+    const aggregasiApi = AggregationApi();
+    const masterboxApi = MasterboxApi();
+    const orderApi = OrderApi();
 
     useEffect(() => {
         if (product !== null) {
@@ -48,25 +48,30 @@ function AgregasiController() {
         }
     }, [scannedData]);
 
-    const getProductAggregationNames = (product) => {
+    const getProductAggregationNames = () => {
         if (product.aggregations === undefined) return [];
         return product.aggregations.map((aggregation) => aggregation.name);
     }
     
-    const loadJob = (index) => {
-        const jobData = jobAPI.jobsData[index];
-        const job = new Job(jobData.job_id, jobData.product_id, jobData.batch_no, jobData.expired_date, jobData.topQuantity, jobData.orderQuantity, jobData.job_status, jobData.date_created);
+    const loadJob = async (index) => {
+        const jobData = jobApi.jobsData[index];
+        const job = new Job(jobData.job_id, jobData.product_id, jobData.batch_no, jobData.expired_date, jobData.topQuantity, jobData.orderQuantity, jobData.status, jobData.date_created);
 
-        const aggregasiData = aggregasiAPI.agregasiData.filter((agregasi) => agregasi.product_id === job.productID);
+        const aggregasiData = aggregasiApi.aggregationsData.filter((agregasi) => agregasi.product_id === job.productID);
         const aggregasi = aggregasiData.map((aggregation) => new Aggregation(aggregation.id, aggregation.product_id, aggregation.name, aggregation.child_quantity, aggregation.package_code, aggregation.level, aggregation.het));
-        const productData = productAPI.productData.find((product) => product.product_id === job.productID);
+        const productData = productApi.productData.find((product) => product.product_id === job.productID);
         const product = new Product(productData.product_id, productData.name, productData.nie, productData.het, productData.storage, aggregasi);
 
-        const orders = orderAPI.fetchOrdersFromJobId(job.id);
-        if (orders !== undefined || orders.length !== 0) {
-            setOrders(orders);
+        const completion = (orders) => {
+            if (orders !== undefined || orders.length !== 0) {
+                const updatedOrders = orders.map((order) => {
+                    return new Order(order.order_id, order.job_id, order.product_id, order.masterbox_id, order.manufacture_date, order.status);
+                });
+                setOrders(updatedOrders);
+            }
         }
-
+        
+        orderApi.fetchOrdersFromJobId(job.id, completion);
         setProduct(product);
         setCurrentJob(job);
     }
@@ -93,7 +98,8 @@ function AgregasiController() {
         }
     }
 
-    const formatDate = (date) => {
+    const formatDate = () => {
+        const date = currentJob.expiredDate;
         if (!date) return "";
         if (date instanceof Date) {
             return date.toISOString().split('T')[0];
@@ -192,6 +198,8 @@ function AgregasiController() {
         scannedData, setScannedData,
         printData, setPrintData,
         product, setProduct,
+        orders, setOrders,
+        masterboxs, setMasterboxs,
         getProductAggregationNames,
         loadJob,
         endJob,
@@ -200,7 +208,12 @@ function AgregasiController() {
         formatDate,
         scanOrder,
         printMasterBox,
-        headers
+        headers,
+        jobApi,
+        productApi,
+        aggregasiApi,
+        masterboxApi,
+        orderApi
     };
 }
 

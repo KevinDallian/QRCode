@@ -15,7 +15,7 @@ export default function Agregasi({jobs, products}){
         <>
             <Link to='/'>Back</Link>
             <h1 className='title'>Agregasi</h1>
-            {controller.showJobModal && <JobModal toggleModal={() => controller.toggleModal("JobModal")} loadJob={index => controller.loadJob(index, jobs, products)} jobs={jobs.filter((job) => job.jobStatus === "Serialized")} />}
+            {controller.showJobModal && <JobModal toggleModal={() => controller.toggleModal("JobModal")} loadJob={index => controller.loadJob(index)} jobs={controller.jobApi.jobsData.filter((job) => job.status === "Serialized")} />}
             {controller.showEndModal && <EndModal toggleModal={() => controller.toggleModal("EndModal")} endJob={controller.endJob} />}
             {controller.showPrintModal && <PrintModal data={controller.printData} toggleModal={() => controller.endPrint()} />}
             <div className='flex-row job-display'>

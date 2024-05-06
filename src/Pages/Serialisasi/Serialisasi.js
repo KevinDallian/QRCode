@@ -12,7 +12,7 @@ export default function Serialisasi() {
 
     return (
         <>
-            {controller.showJobModal && <JobModal toggleModal={() => controller.toggleModal("JobModal")} loadJob={controller.loadJob} jobs={controller.jobApi.jobsData} />}
+            {controller.showJobModal && <JobModal toggleModal={() => controller.toggleModal("JobModal")} loadJob={controller.loadJob} jobs={controller.jobApi.jobsData.filter((job) => job.status === "Active")} />}
             <Link to='/'>Back</Link>
             {controller.showEndModal && <EndModal toggleModal={() => controller.toggleModal("EndModal")} endJob={controller.endJob} />}
             {controller.showPrintModal && <PrintModal data={controller.orders} toggleModal={() => controller.endPrint()} job={controller.currentJob} product={controller.productApi.productData.find((product) => product.product_id === controller.currentJob.productID)} />}
