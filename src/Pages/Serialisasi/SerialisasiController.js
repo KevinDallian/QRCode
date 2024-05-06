@@ -28,9 +28,9 @@ function SerialisasiController(){
         const completion = (orders) => {
             if (orders.length > 0) {
                 const updatedOrders = orders.map((order) => {
-                    return new Order(order.order_id, order.job_id, order.product_id, null, null, order.status);
+                    return new Order(order.order_id, order.job_id, order.product_id, order.masterbox_id, order.manufacture_date, order.status);
                 });
-                const orderDisplay = updatedOrders.map((data, index) => {
+                const orderDisplay = updatedOrders.map((data) => {
                     return {
                         id : data.id,
                         jobID : data.jobID,
@@ -101,6 +101,9 @@ function SerialisasiController(){
                 }
             }));
             toggleModal("PrintModal");
+            const job = currentJob;
+            job.jobStatus = "Serialized";
+            jobApi.updateJob(currentJob.id, job, () => {});
         }
 
         orderApi.updateOrders(ordersTobePrinted, handleSuccess);

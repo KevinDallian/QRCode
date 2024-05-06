@@ -103,7 +103,7 @@ function JobController() {
             topQuantity,
             quantity,
             jobStatus,
-            new Date().toLocaleDateString()
+            new Date()
         );
 
         const handleSuccess = (updatedJobs) => {
@@ -125,7 +125,7 @@ function JobController() {
         }
 
         if (currentIndex !== null) {
-            jobAPI.updateJob(currentIndex, updatedData, handleSuccess([...jobs.slice(0, currentIndex), updatedData, ...jobs.slice(currentIndex+1)]));
+            jobAPI.updateJob(updatedData.id, updatedData, handleSuccess([...jobs.slice(0, currentIndex), updatedData, ...jobs.slice(currentIndex+1)]));
         } else {
             jobAPI.insertJob(updatedData, handleSuccess([...jobs, updatedData]));
         }

@@ -124,7 +124,6 @@ function PrintModal({data, toggleModal, job, product}) {
     }
 
     const dataToBePrinted = data.map((data, index) => {
-        console.log(product);
         return (
             <div key={index} className='modal-border flex-space-between'>
                 <table id='table'>
