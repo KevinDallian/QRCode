@@ -60,7 +60,7 @@ function AgregasiController() {
         const aggregasiData = aggregasiApi.aggregationsData.filter((agregasi) => agregasi.product_id === job.productID);
         const aggregasi = aggregasiData.map((aggregation) => new Aggregation(aggregation.id, aggregation.product_id, aggregation.name, aggregation.child_quantity, aggregation.package_code, aggregation.level, aggregation.het));
         const productData = productApi.productData.find((product) => product.product_id === job.productID);
-        const product = new Product(productData.product_id, productData.name, productData.nie, productData.het, productData.storage, aggregasi);
+        const product = new Product(productData.product_id, productData.name, productData.nie, productData.het, productData.storage_condition, aggregasi);
 
         const completion = (orders) => {
             if (orders !== undefined || orders.length !== 0) {
@@ -111,10 +111,10 @@ function AgregasiController() {
     const scanOrder = () => {
         const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
         if (aggregation.level === 1) {
-            const orders = orders.filter((order) => order.jobID === currentJob.id && order.masterboxID === "");
-            if (orders === undefined || orders.length === 0) return;
+            const emptyMasterboxOrders = orders.filter((order) => order.masterboxID === null);
+            if (emptyMasterboxOrders === undefined || emptyMasterboxOrders.length === 0) return;
             const index = scannedData.length;
-            const order = orders[index];
+            const order = emptyMasterboxOrders[index];
             const newData = {
                 orderID : order.id,
                 masterboxID : order.masterboxID,
@@ -124,11 +124,11 @@ function AgregasiController() {
             setScannedData([...scannedData, newData]);
         } else {
             const masterboxPrefix = aggregation.prefix;
-            const masterboxs = masterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id && !masterbox.id.includes(masterboxPrefix) &&masterbox.masterboxID === undefined);
-            if (masterboxs === undefined || masterboxs.length === 0) return;
+            const filteredMasterboxes = masterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id && !masterbox.id.includes(masterboxPrefix) && masterbox.masterboxID === undefined);
+            if (filteredMasterboxes === undefined || filteredMasterboxes.length === 0) return;
             const index = scannedData.length;
-            if (masterboxs[index] == null) return;
-            const masterbox = masterboxs[index];
+            if (filteredMasterboxes[index] == null) return;
+            const masterbox = filteredMasterboxes[index];
             const newData = {
                 orderID : masterbox.id,
                 masterboxID : masterbox.masterboxID || '',
@@ -160,6 +160,7 @@ function AgregasiController() {
             manufacturer : "PT Samco Indonesia",
             batchNo : currentJob.batchNo,
         };
+
         const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
         if (aggregation.level === 1) {
             let globalArrayOrders = [...orders];
@@ -170,7 +171,16 @@ function AgregasiController() {
                 }
                 return order;
             });
-            setOrders(updatedOrders);
+            
+            const ordersToBeUpdated = scannedData.map((data) => {
+                return data.orderID;
+            });
+
+            const handleSuccess = () => {
+                setOrders(updatedOrders);
+            }
+
+            orderApi.updateOrdersMasterbox(ordersToBeUpdated, generatedID, handleSuccess);
         } else {
             let globalArrayMasterboxs = [...masterboxs];
             const updatedMasterboxs = globalArrayMasterboxs.map((masterbox) => {
@@ -182,6 +192,7 @@ function AgregasiController() {
             });
             setMasterboxs(updatedMasterboxs);
         }
+        
         setScannedData([]);
         setMasterboxs([...masterboxs, masterbox]);
         setPrintData(printData);

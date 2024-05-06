@@ -30,13 +30,13 @@ function OrderAPI(){
             });
     }
 
-    async function updateOrdersMasterbox(orders, masterboxId) {
+    async function updateOrdersMasterbox(orders, masterboxId, completion) {
         const jsonData = {
             masterbox_id : masterboxId,
-            orders : orders.map(order => order.id)
+            orders: orders
         }
 
-        fetch(`${API_ENDPOINTS.orders}/orders`, {
+        fetch(`${API_ENDPOINTS.orders}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -46,6 +46,7 @@ function OrderAPI(){
         .then(response => response.json())
         .then(data => {
             if (data.status === 200) {
+                completion();
                 alert('Data order berhasil diupdate!');
             } else {
                 alert(`Gagal mengubah data order! ${data.error}`);
