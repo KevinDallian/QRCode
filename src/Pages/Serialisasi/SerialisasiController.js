@@ -20,7 +20,7 @@ function SerialisasiController(){
     const orderApi = OrderApi();
 
     const loadJob = async (index) => {
-        const job = jobApi.jobsData[index];
+        const job = jobApi.jobsData.filter((job) => job.status === "Active")[index];
         const updatedJob = new Job(job.job_id, job.product_id, job.batch_no, job.expired_date, job.top_order_qty, job.bottom_order_qty , job.status, job.date_created);
         const product = productApi.productData.find((product) => product.product_id === updatedJob.productID);
         setCurrentJob(updatedJob);

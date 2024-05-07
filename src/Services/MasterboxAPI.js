@@ -57,6 +57,29 @@ function MasterboxAPI(){
             });
     }
 
+    async function updateParentMasterbox(parentMasterboxId, masterboxData, completion){
+        const jsonData = {
+            parent_masterbox : parentMasterboxId,
+            masterboxs : masterboxData
+        }
+        fetch(`${API_ENDPOINTS.masterboxs}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 200) {
+                completion();
+                alert('Data order berhasil diupdate!');
+            } else {
+                alert(`Gagal mengubah data order! ${data.error}`);
+            }
+        });
+    }
+
     async function deleteMasterbox(masterboxId, completion){
         apiService.deleteData(masterboxId)
             .then((response) => {
@@ -69,7 +92,7 @@ function MasterboxAPI(){
             });
     }
 
-    return { masterboxsData, fetchDataFromJobId, insertMasterbox, updateMasterbox, deleteMasterbox};
+    return { masterboxsData, fetchData, fetchDataFromJobId, insertMasterbox, updateMasterbox, updateParentMasterbox, deleteMasterbox};
 }
 
 export default MasterboxAPI;

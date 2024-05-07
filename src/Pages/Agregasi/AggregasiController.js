@@ -72,7 +72,6 @@ function AgregasiController() {
         }
 
         const completionMasterbox = (masterboxs) => {
-            
             if (masterboxs !== undefined || masterboxs.length !== 0) {
                 const updatedMasterboxs = masterboxs.map((masterbox) => {
                     return new Masterbox(masterbox.masterbox_id, masterbox.job_id, masterbox.product_id, masterbox.child_quantity, masterbox.manufacture_date, masterbox.status);
@@ -157,7 +156,8 @@ function AgregasiController() {
         const masterboxPrefix = productAggregation.prefix;
         const existingDataLength = masterboxs.filter((masterbox) => masterbox.id.includes(masterboxPrefix)).length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
-        const masterbox = new Masterbox(generatedID, currentJob.id, currentJob.productID, productAggregation.quantity, new Date().toLocaleDateString(), "Printed");
+        const masterbox = new Masterbox(generatedID, currentJob.id, currentJob.productID, productAggregation.quantity, new Date().toLocaleDateString(), "Printed", productAggregation.level < product.aggregations.length ? true : false, null);
+        
         const printData = {
             id : generatedID,
             productName : product.name,
@@ -199,14 +199,25 @@ function AgregasiController() {
                         }
                         return masterbox;
                     });
-                    setMasterboxs(updatedMasterboxs);
+
+                    const masterboxToBeUpdated = scannedData.map((data) => {
+                        return data.orderID;
+                    });
+
+                    const handleSuccess = () => {
+                        setMasterboxs(updatedMasterboxs);
+                    };
+
+                    masterboxApi.updateParentMasterbox(generatedID, masterboxToBeUpdated, handleSuccess);
                 }
                 setScannedData([]);
                 setMasterboxs([...masterboxs, masterbox]);
                 setPrintData(printData);
                 toggleModal("PrintModal");
         }
-        
+        console.log(`Aggregation Level: ${aggregationLvl}`);
+        console.log(product.aggregations.length);
+        console.log(masterbox);
         masterboxApi.insertMasterbox(masterbox, completion);
             
     }
