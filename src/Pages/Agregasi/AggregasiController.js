@@ -70,8 +70,21 @@ function AgregasiController() {
                 setOrders(updatedOrders);
             }
         }
+
+        const completionMasterbox = (masterboxs) => {
+            
+            if (masterboxs !== undefined || masterboxs.length !== 0) {
+                const updatedMasterboxs = masterboxs.map((masterbox) => {
+                    return new Masterbox(masterbox.masterbox_id, masterbox.job_id, masterbox.product_id, masterbox.child_quantity, masterbox.manufacture_date, masterbox.status);
+                });
+                console.log(updatedMasterboxs);
+                setMasterboxs(updatedMasterboxs);
+            }
+        }
         
         orderApi.fetchOrdersFromJobId(job.id, completion);
+
+        masterboxApi.fetchDataFromJobId(job.id, completionMasterbox);
         setProduct(product);
         setCurrentJob(job);
     }
@@ -124,7 +137,7 @@ function AgregasiController() {
             setScannedData([...scannedData, newData]);
         } else {
             const masterboxPrefix = aggregation.prefix;
-            const filteredMasterboxes = masterboxs.filter((masterbox)=> masterbox.jobID === currentJob.id && !masterbox.id.includes(masterboxPrefix) && masterbox.masterboxID === undefined);
+            const filteredMasterboxes = masterboxs.filter((masterbox)=> masterbox.jobId === currentJob.id && !masterbox.id.includes(masterboxPrefix) && masterbox.masterboxID === undefined);
             if (filteredMasterboxes === undefined || filteredMasterboxes.length === 0) return;
             const index = scannedData.length;
             if (filteredMasterboxes[index] == null) return;
@@ -139,17 +152,12 @@ function AgregasiController() {
         }
     }
 
-    const printMasterBox = () => {
+    const printMasterBox = async () => {
         const productAggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
         const masterboxPrefix = productAggregation.prefix;
         const existingDataLength = masterboxs.filter((masterbox) => masterbox.id.includes(masterboxPrefix)).length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
-        const masterbox = {
-            id : generatedID,
-            productID : currentJob.productID,
-            jobID : currentJob.id,
-            printDate : new Date().toLocaleDateString(),
-        }
+        const masterbox = new Masterbox(generatedID, currentJob.id, currentJob.productID, productAggregation.quantity, new Date().toLocaleDateString(), "Printed");
         const printData = {
             id : generatedID,
             productName : product.name,
@@ -161,42 +169,46 @@ function AgregasiController() {
             batchNo : currentJob.batchNo,
         };
 
-        const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
-        if (aggregation.level === 1) {
-            let globalArrayOrders = [...orders];
-            const updatedOrders = globalArrayOrders.map((order) => {
-                if (scannedData.find((data) => data.orderID === order.id)){
-                    order.masterboxID = generatedID;
-                    order.status = "Scanned";
-                }
-                return order;
-            });
-            
-            const ordersToBeUpdated = scannedData.map((data) => {
-                return data.orderID;
-            });
+        const completion = () => {
+            const aggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
+                if (aggregation.level === 1) {
+                    let globalArrayOrders = [...orders];
+                    const updatedOrders = globalArrayOrders.map((order) => {
+                        if (scannedData.find((data) => data.orderID === order.id)){
+                            order.masterboxID = generatedID;
+                            order.status = "Scanned";
+                        }
+                        return order;
+                    });
+                    
+                    const ordersToBeUpdated = scannedData.map((data) => {
+                        return data.orderID;
+                    });
 
-            const handleSuccess = () => {
-                setOrders(updatedOrders);
-            }
+                    const handleSuccess = () => {
+                        setOrders(updatedOrders);
+                    }
 
-            orderApi.updateOrdersMasterbox(ordersToBeUpdated, generatedID, handleSuccess);
-        } else {
-            let globalArrayMasterboxs = [...masterboxs];
-            const updatedMasterboxs = globalArrayMasterboxs.map((masterbox) => {
-                if (scannedData.find((data) => data.orderID === masterbox.id)){
-                    masterbox.masterboxID = generatedID;
-                    masterbox.status = "Scanned";
+                    orderApi.updateOrdersMasterbox(ordersToBeUpdated, generatedID, handleSuccess);
+                } else {
+                    let globalArrayMasterboxs = [...masterboxs];
+                    const updatedMasterboxs = globalArrayMasterboxs.map((masterbox) => {
+                        if (scannedData.find((data) => data.orderID === masterbox.id)){
+                            masterbox.masterboxID = generatedID;
+                            masterbox.status = "Scanned";
+                        }
+                        return masterbox;
+                    });
+                    setMasterboxs(updatedMasterboxs);
                 }
-                return masterbox;
-            });
-            setMasterboxs(updatedMasterboxs);
+                setScannedData([]);
+                setMasterboxs([...masterboxs, masterbox]);
+                setPrintData(printData);
+                toggleModal("PrintModal");
         }
         
-        setScannedData([]);
-        setMasterboxs([...masterboxs, masterbox]);
-        setPrintData(printData);
-        toggleModal("PrintModal");
+        masterboxApi.insertMasterbox(masterbox, completion);
+            
     }
 
     return {

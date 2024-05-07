@@ -21,13 +21,23 @@ function MasterboxAPI(){
             });
     }
 
+    async function fetchDataFromJobId(jobId, completion){
+        apiService.fetchDataFromId(jobId)
+            .then((response) => {
+                if (response.status === 200) {
+                    completion(response.data);
+                } else {
+                    alert(`Gagal mengambil data masterbox! ${response.error}`);
+                }
+            });
+    }
+
     async function insertMasterbox(masterboxData, completion){
         const jsonData = masterboxData.toJSON();
         apiService.insertData(jsonData)
             .then((response) => {
                 if (response.status === 200) {
                     completion();
-                    alert('Data masterbox berhasil ditambahkan!');
                 } else {
                     alert(`Gagal menambahkan data masterbox! ${response.error}`);
                 }
@@ -59,7 +69,7 @@ function MasterboxAPI(){
             });
     }
 
-    return { masterboxsData, insertMasterbox, updateMasterbox, deleteMasterbox};
+    return { masterboxsData, fetchDataFromJobId, insertMasterbox, updateMasterbox, deleteMasterbox};
 }
 
 export default MasterboxAPI;
