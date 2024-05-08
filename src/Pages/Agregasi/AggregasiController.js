@@ -76,7 +76,6 @@ function AgregasiController() {
                 const updatedMasterboxs = masterboxs.map((masterbox) => {
                     return new Masterbox(masterbox.masterbox_id, masterbox.job_id, masterbox.product_id, masterbox.child_quantity, masterbox.manufacture_date, masterbox.status);
                 });
-                console.log(updatedMasterboxs);
                 setMasterboxs(updatedMasterboxs);
             }
         }
@@ -136,7 +135,7 @@ function AgregasiController() {
             setScannedData([...scannedData, newData]);
         } else {
             const masterboxPrefix = aggregation.prefix;
-            const filteredMasterboxes = masterboxs.filter((masterbox)=> masterbox.jobId === currentJob.id && !masterbox.id.includes(masterboxPrefix) && masterbox.masterboxID === undefined);
+            const filteredMasterboxes = masterboxs.filter((masterbox)=> masterbox.jobId === currentJob.id && !masterbox.id.includes(masterboxPrefix) && masterbox.parentMasterboxId === null);
             if (filteredMasterboxes === undefined || filteredMasterboxes.length === 0) return;
             const index = scannedData.length;
             if (filteredMasterboxes[index] == null) return;
@@ -215,9 +214,6 @@ function AgregasiController() {
                 setPrintData(printData);
                 toggleModal("PrintModal");
         }
-        console.log(`Aggregation Level: ${aggregationLvl}`);
-        console.log(product.aggregations.length);
-        console.log(masterbox);
         masterboxApi.insertMasterbox(masterbox, completion);
             
     }
