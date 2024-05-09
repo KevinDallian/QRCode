@@ -15,8 +15,6 @@ function MasterboxAPI(){
             .then((response) => {
                 if (response.status === 200) {
                     setMasterboxsData(response.data);
-                } else {
-                    alert(`Gagal mengambil data masterbox! ${response.error}`);
                 }
             });
     }
@@ -26,8 +24,6 @@ function MasterboxAPI(){
             .then((response) => {
                 if (response.status === 200) {
                     completion(response.data);
-                } else {
-                    alert(`Gagal mengambil data masterbox! ${response.error}`);
                 }
             });
     }

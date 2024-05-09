@@ -13,7 +13,7 @@ function AggregationAPI() {
                 if (response.status === 200) {
                     setAggregationsData(response.data);
                 } else {
-                    alert(`Gagal mengambil data aggregasi! ${response.error}`);
+                    return [];
                 }
             });
     }, []);

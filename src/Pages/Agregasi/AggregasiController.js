@@ -74,8 +74,9 @@ function AgregasiController() {
         const completionMasterbox = (masterboxs) => {
             if (masterboxs !== undefined || masterboxs.length !== 0) {
                 const updatedMasterboxs = masterboxs.map((masterbox) => {
-                    return new Masterbox(masterbox.masterbox_id, masterbox.job_id, masterbox.product_id, masterbox.child_quantity, masterbox.manufacture_date, masterbox.status);
+                    return new Masterbox(masterbox.masterbox_id, masterbox.job_id, masterbox.product_id, masterbox.child_quantity, masterbox.manufacture_date, masterbox.status, masterbox.has_masterbox, masterbox.parent_masterbox);
                 });
+                console.log(updatedMasterboxs);
                 setMasterboxs(updatedMasterboxs);
             }
         }

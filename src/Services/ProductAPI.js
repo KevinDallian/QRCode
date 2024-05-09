@@ -12,8 +12,6 @@ function ProductAPI() {
             .then((response) => {
                 if (response.status === 200) {
                     setProductData(response.data);
-                } else {
-                    alert(`Gagal mengambil data produk! ${response.error}`);
                 }
             });
     }, []);

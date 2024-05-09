@@ -12,8 +12,6 @@ function JobAPI() {
             .then((response) => {
                 if (response.status === 200) {
                     setJobsData(response.data);
-                } else {
-                    alert(`Gagal mengambil data pekerjaan! ${response.error}`);
                 }
             });
     }, []);
