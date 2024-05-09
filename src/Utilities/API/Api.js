@@ -10,6 +10,11 @@ function APIService(baseUrl) {
         return response.json();
     }
 
+    async function fetchDataFromQuery(query){
+        const response = await fetch(`${baseUrl}?${query}`, {method: 'GET'});
+        return response.json();
+    }
+
     async function updateDatabyId(id, updatedData) {
         const response = await fetch(`${baseUrl}/${id}`, {
             method: 'PUT',
@@ -54,7 +59,7 @@ function APIService(baseUrl) {
         return response.json();
     }
     
-    return { fetchData, fetchDataFromId, updateData: updateDatabyId, updateBatchDatas, insertData, deleteData};
+    return { fetchData, fetchDataFromId, fetchDataFromQuery, updateData: updateDatabyId, updateBatchDatas, insertData, deleteData};
 }
 
 export default APIService;

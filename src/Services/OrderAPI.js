@@ -15,6 +15,17 @@ function OrderAPI(){
             });
     }
 
+    async function fetchOrdersFromQuery(query){
+        apiService.fetchDataFromQuery(query)
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.data;
+                } else {
+                    return [];
+                }
+            });
+    }
+
     async function updateOrders(orders, completion){
         const jsonData = {
             orders: orders.map(order => order.toJSON())
@@ -81,7 +92,7 @@ function OrderAPI(){
         });
     }
 
-    return { fetchOrdersFromJobId, updateOrders, updateOrdersMasterbox, insertOrders, deleteOrders };
+    return { fetchOrdersFromJobId, fetchOrdersFromQuery, updateOrders, updateOrdersMasterbox, insertOrders, deleteOrders };
 }
 
 export default OrderAPI;
