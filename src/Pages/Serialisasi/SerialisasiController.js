@@ -85,7 +85,7 @@ function SerialisasiController(){
     const printData = () => {
         const ordersTobePrinted = orders.map((order) => {
             order.status = "Printed";
-            order.manufactureDate = new Date().toLocaleDateString();
+            order.manufactureDate = new Date();
             return order;
         });
 

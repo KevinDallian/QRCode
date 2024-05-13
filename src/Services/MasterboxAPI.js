@@ -28,6 +28,18 @@ function MasterboxAPI(){
             });
     }
 
+    async function fetchMasterboxToday(completion){
+        fetch(`${API_ENDPOINTS.masterboxs}/today`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
+                    completion(data.data);
+                } else {
+                    alert(`Gagal mengambil data masterbox! ${data.error}`);
+                }
+            });
+    }
+
     async function insertMasterbox(masterboxData, completion){
         const jsonData = masterboxData.toJSON();
         apiService.insertData(jsonData)
@@ -88,7 +100,7 @@ function MasterboxAPI(){
             });
     }
 
-    return { masterboxsData, fetchData, fetchDataFromJobId, insertMasterbox, updateMasterbox, updateParentMasterbox, deleteMasterbox};
+    return { masterboxsData, fetchData, fetchMasterboxToday, fetchDataFromJobId, insertMasterbox, updateMasterbox, updateParentMasterbox, deleteMasterbox};
 }
 
 export default MasterboxAPI;

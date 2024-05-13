@@ -15,6 +15,29 @@ function OrderAPI(){
             });
     }
 
+    async function fetchOrdersFromMasterboxId(masterboxId, completion){
+        apiService.fetchDataFromQuery(`masterbox_id=${masterboxId}`)
+            .then((response) => {
+                if (response.status === 200) {
+                    completion(response.data);
+                } else {
+                    return [];
+                }
+            });
+    }
+
+    async function fetchOrdersToday(completion){
+        fetch(`${API_ENDPOINTS.orders}/today`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
+                    completion(data.data);
+                } else {
+                    alert(`Gagal mengambil data order! ${data.error}`);
+                }
+            });
+    }
+
     async function fetchOrdersFromQuery(query){
         apiService.fetchDataFromQuery(query)
             .then((response) => {
@@ -92,7 +115,7 @@ function OrderAPI(){
         });
     }
 
-    return { fetchOrdersFromJobId, fetchOrdersFromQuery, updateOrders, updateOrdersMasterbox, insertOrders, deleteOrders };
+    return { fetchOrdersFromJobId, fetchOrdersFromMasterboxId, fetchOrdersToday, fetchOrdersFromQuery, updateOrders, updateOrdersMasterbox, insertOrders, deleteOrders };
 }
 
 export default OrderAPI;

@@ -13,8 +13,8 @@ export default function Reporting({}){
             <Link to={"/"}>Back</Link>
             <div className='title'><h1>Dashboard</h1></div>
             <div className='dashboard-cards flex-row'>
-                <DashboardCard text={"Order dicetak hari ini"} value={reportingController.calculateOrderPrintedToday()} subtitles={"+2% dari kemarin"}/>
-                <DashboardCard text={"Masterbox dicetak hari ini"} value={reportingController.calculateMasterboxPrintedToday()} subtitles={"-3% dari kemarin"}/>
+                <DashboardCard text={"Order dicetak hari ini"} value={reportingController.ordersToday} subtitles={""}/>
+                <DashboardCard text={"Masterbox dicetak hari ini"} value={reportingController.masterboxsToday} subtitles={""}/>
                 <DashboardCard text={"Order pending hari ini"} value={50} subtitles={""}/>
             </div>
             <div className='dashboard-chart-container'>

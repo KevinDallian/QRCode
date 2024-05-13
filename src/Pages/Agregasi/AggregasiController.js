@@ -54,7 +54,7 @@ function AgregasiController() {
     }
     
     const loadJob = async (index) => {
-        const jobData = jobApi.jobsData[index];
+        const jobData = jobApi.jobsData.filter((job) => job.status === "Serialized")[index];
         const job = new Job(jobData.job_id, jobData.product_id, jobData.batch_no, jobData.expired_date, jobData.topQuantity, jobData.orderQuantity, jobData.status, jobData.date_created);
 
         const aggregasiData = aggregasiApi.aggregationsData.filter((agregasi) => agregasi.product_id === job.productID);
@@ -76,7 +76,6 @@ function AgregasiController() {
                 const updatedMasterboxs = masterboxs.map((masterbox) => {
                     return new Masterbox(masterbox.masterbox_id, masterbox.job_id, masterbox.product_id, masterbox.child_quantity, masterbox.manufacture_date, masterbox.status, masterbox.has_masterbox, masterbox.parent_masterbox);
                 });
-                console.log(updatedMasterboxs);
                 setMasterboxs(updatedMasterboxs);
             }
         }
@@ -144,7 +143,7 @@ function AgregasiController() {
             const newData = {
                 orderID : masterbox.id,
                 masterboxID : masterbox.masterboxID || '',
-                manufactureDate : new Date().toString(),
+                manufactureDate : new Date(),
                 orderStatus : masterbox.status
             };
             setScannedData([...scannedData, newData]);
@@ -156,7 +155,8 @@ function AgregasiController() {
         const masterboxPrefix = productAggregation.prefix;
         const existingDataLength = masterboxs.filter((masterbox) => masterbox.id.includes(masterboxPrefix)).length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
-        const masterbox = new Masterbox(generatedID, currentJob.id, currentJob.productID, productAggregation.quantity, new Date().toLocaleDateString(), "Printed", productAggregation.level < product.aggregations.length ? true : false, null);
+        
+        const masterbox = new Masterbox(generatedID, currentJob.id, currentJob.productID, productAggregation.quantity, new Date(), "Printed", productAggregation.level < product.aggregations.length ? true : false, null);
         
         const printData = {
             id : generatedID,
@@ -205,16 +205,22 @@ function AgregasiController() {
                     });
 
                     const handleSuccess = () => {
-                        setMasterboxs(updatedMasterboxs);
+                        if (updatedMasterboxs.length === currentJob.topQuantity - 1) {
+                            const job = currentJob;
+                            job.jobStatus = "Aggregated";
+                            jobApi.updateJob(currentJob.id, job, () => {});
+                            setCurrentJob(job);
+                        }
+                        setMasterboxs(...updatedMasterboxs, masterbox);
                     };
 
                     masterboxApi.updateParentMasterbox(generatedID, masterboxToBeUpdated, handleSuccess);
                 }
                 setScannedData([]);
-                setMasterboxs([...masterboxs, masterbox]);
                 setPrintData(printData);
                 toggleModal("PrintModal");
         }
+        console.log(masterbox);
         masterboxApi.insertMasterbox(masterbox, completion);
             
     }

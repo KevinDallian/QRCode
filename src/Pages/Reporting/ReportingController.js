@@ -15,12 +15,19 @@ function ReportingController() {
     const [currentProduct, setCurrentProduct] = useState('');
     const [selectedProduct, setSelectedProduct] = useState('');
     const [products, setProducts] = useState([]);
+    const [masterboxsToday, setMasterboxsToday] = useState(0);
+    const [ordersToday, setOrdersToday] = useState(0);
 
     const orderAPI = OrderAPI();
     const productAPI = ProductAPI();
     const masterboxAPI = MasterboxAPI();
     const jobAPI = JobAPI();
     const aggregationAPI = AggregationAPI();
+
+    useEffect(() => {
+        calculateMasterboxPrintedToday();
+        calculateOrderPrintedToday();
+    }, []);
 
     useEffect(() => {
         if (productAPI.productData && aggregationAPI.aggregationsData) {
@@ -47,19 +54,28 @@ function ReportingController() {
     }
 
     function calculateOrderPrintedToday() {
-        return 0;
+
+        const completion = (data) => {
+            setOrdersToday(data.length);
+        }
+
+        orderAPI.fetchOrdersToday(completion);
     }
 
     function calculateMasterboxPrintedToday() {
-        return 0;
+        const completion = (data) => {
+            setMasterboxsToday(data.length);
+        }
+
+        masterboxAPI.fetchMasterboxToday(completion);
     }
 
     return {
-        calculateOrderPrintedToday,
-        calculateMasterboxPrintedToday,
         products,
         selectedProduct,
         setSelectedProduct,
+        masterboxsToday,
+        ordersToday,
         currentProduct
     }
 }
