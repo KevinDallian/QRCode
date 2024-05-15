@@ -153,7 +153,7 @@ function AgregasiController() {
     const printMasterBox = async () => {
         const productAggregation = product.aggregations.find((aggregation) => aggregation.name === aggregationLvl);
         const masterboxPrefix = productAggregation.prefix;
-        const existingDataLength = masterboxs.filter((masterbox) => masterbox.id.includes(masterboxPrefix)).length + 1;
+        const existingDataLength = masterboxs.filter((masterbox) => masterbox.id.includes(`${product.nie}/${currentJob.batchNo}/${masterboxPrefix}`)).length + 1;
         const generatedID = `${product.nie}/${currentJob.batchNo}/${masterboxPrefix}${(existingDataLength).toString().padStart(3, "0")}`;
         
         const masterbox = new Masterbox(generatedID, currentJob.id, currentJob.productID, productAggregation.quantity, new Date(), "Printed", productAggregation.level < product.aggregations.length ? true : false, null);
@@ -186,6 +186,7 @@ function AgregasiController() {
                     });
 
                     const handleSuccess = () => {
+                        setMasterboxs([...masterboxs, masterbox]);
                         setOrders(updatedOrders);
                     }
 
@@ -220,9 +221,7 @@ function AgregasiController() {
                 setPrintData(printData);
                 toggleModal("PrintModal");
         }
-        console.log(masterbox);
         masterboxApi.insertMasterbox(masterbox, completion);
-            
     }
 
     return {

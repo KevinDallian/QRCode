@@ -11,7 +11,7 @@ export default function Reporting({}){
     return (
         <>
             <Link to={"/"}>Back</Link>
-            <div className='title'><h1>Dashboard</h1></div>
+            <div className='reporting-title'><h1>Dashboard</h1></div>
             <div className='dashboard-cards flex-row'>
                 <DashboardCard text={"Order dicetak hari ini"} value={reportingController.ordersToday} subtitles={""}/>
                 <DashboardCard text={"Masterbox dicetak hari ini"} value={reportingController.masterboxsToday} subtitles={""}/>
@@ -35,8 +35,6 @@ export default function Reporting({}){
                 </div>
                 }
             </div>
-            
-            
         </>
     )
 }
