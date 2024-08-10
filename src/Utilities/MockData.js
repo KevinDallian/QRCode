@@ -50,10 +50,11 @@ export const jobsMockData = [
         id : "J001",
         productID : "PR001",
         batchNo : "UX123",
-        expiredDate : new Date(),
+        expiredDate : new Date().toLocaleDateString(),
         topAggregationQty : 1,
         productQty: 50,
-        jobStatus : "Active"
+        jobStatus : "Active",
+        dateCreated : new Date().toLocaleDateString(),
     },
     {
         id : "J002",
@@ -62,6 +63,7 @@ export const jobsMockData = [
         expiredDate : new Date(),
         topAggregationQty : 2,
         productQty: 100,
-        jobStatus : "Active"
+        jobStatus : "Active",
+        dateCreated : new Date().toLocaleDateString(),
     }
 ];

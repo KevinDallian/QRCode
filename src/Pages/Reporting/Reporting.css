@@ -1,3 +1,8 @@
+.reporting-title{
+    margin-top: 5vh;
+    margin-left: 4vw;
+}
+
 .center {
     display: flex;
     flex-direction: column;
